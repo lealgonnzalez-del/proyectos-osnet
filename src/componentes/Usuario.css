@@ -1,43 +1,68 @@
 .container2{
-margin:40px auto;
-padding:20px;
-width:90%;
-background:white;
-border-radius:8px;
-box-shadow:0px 4px 10px rgba(0,0,0,0.2);
+  margin:40px auto;
+  padding:25px;
+  width:90%;
+  background:white;
+  border-radius:10px;
+  box-shadow:0px 10px 25px rgba(0,0,0,0.15);
+  text-align:center;
+}
+
+/* titulo */
+.container2 h2{
+  margin-bottom:20px;
+  color:#333;
+}
+
+/* buscador */
+.search-box{
+  margin-bottom:15px;
+}
+
+.search-box input{
+  padding:8px 12px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  outline:none;
 }
 
 /* tabla */
 .table{
-width:100%;
-border-collapse:collapse;
-font-size:18px;
+  width:100%;
+  border-collapse:collapse;
+  font-size:16px;
+  overflow:hidden;
+  border-radius:8px;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
 }
 
 /* encabezado */
 .table thead{
-background:#0a3d62;
-color:white;
+  background:#0a3d62;
+  color:white;
 }
 
 /* celdas */
 .table th,
 .table td{
-padding:12px;
-border:1px solid black;
-text-align:center;
+  padding:12px;
+  border:1px solid #ddd;
 }
 
 /* filas alternadas */
 .table tbody tr:nth-child(odd){
-background:#ffffff;
+  background:#ffffff;
 }
 
 .table tbody tr:nth-child(even){
-background:#f2f6ff;
+  background:#f2f2f2;
 }
 
 /* hover */
 .table tbody tr:hover{
-background:#d6e4ff;
+  background:#d6eaff;
 }
