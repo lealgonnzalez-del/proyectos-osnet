@@ -34,7 +34,7 @@ function SimpleTable() {
   });
 
   return (
-    <div className = "container2" style={{ 
+    <div className = "table" style={{ 
       width: "100%", 
       margin: "40px auto",
       padding: "20px",

@@ -2,7 +2,7 @@
   margin:40px auto;
   padding:25px;
   width:90%;
-  background:white;
+  background:rgb(173, 76, 76);
   border-radius:10px;
   box-shadow:0px 10px 25px rgba(0,0,0,0.15);
   text-align:center;
@@ -28,7 +28,7 @@
 
 /* tabla */
 .table{
-  width:100%;
+  width:150%;
   border-collapse:collapse;
   font-size:16px;
   overflow:hidden;
@@ -42,8 +42,8 @@
 
 /* encabezado */
 .table thead{
-  background:#0a3d62;
-  color:white;
+  background:#000000;
+  color:rgb(0, 0, 0);
 }
 
 /* celdas */
@@ -55,7 +55,7 @@
 
 /* filas alternadas */
 .table tbody tr:nth-child(odd){
-  background:#ffffff;
+  background:#0e91c5;
 }
 
 .table tbody tr:nth-child(even){
@@ -64,5 +64,5 @@
 
 /* hover */
 .table tbody tr:hover{
-  background:#d6eaff;
+  background:#1f43e6;
 }
