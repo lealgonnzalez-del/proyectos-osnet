@@ -10,6 +10,7 @@ function SimpleTable() {
     { id: 1, cliente: "Juan", tipo: "Pago", monto: 200, fecha: "2026-03-10", agente: "Carlos" },
     { id: 2, cliente: "Maria", tipo: "Retiro", monto: 150, fecha: "2026-03-11", agente: "Ana" },
     { id: 3, cliente: "Pedro", tipo: "Deposito", monto: 300, fecha: "2026-03-12", agente: "Luis" }
+      
   ], []);
 
   const filteredData = useMemo(() => {
@@ -34,7 +35,7 @@ function SimpleTable() {
   });
 
   return (
-    <div className = "table" style={{ 
+    <div className = "containerTable" style={{ 
       width: "100%", 
       margin: "40px auto",
       padding: "20px",
@@ -60,7 +61,7 @@ function SimpleTable() {
       </div>
 
       {/* TABLA */}
-      <table
+      <table className="table"
         style={{
           width: "100%",
           padding: "20px",
