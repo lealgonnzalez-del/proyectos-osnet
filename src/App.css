@@ -1,0 +1,144 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: white;
+  padding: 40px;
+  width: 350px;
+  border-radius: 15px;
+  box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.input:hover {
+  border-color: #888;
+}
+
+.input:focus {
+  border-color: #0879db;
+  outline: none;
+  box-shadow: 0px 0px 8px rgba(76, 132, 175, 0.787);
+}
+
+.inputError {
+  border-color: red;
+  background-color: #ffe6e6;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 15px; /* espacio entre botones */
+  margin-top: 20px;
+}
+
+.button {
+  padding: 12px 20px;
+  background: #4facfe;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.button:hover {
+  background: #2f8df5;
+}
+
+.clearButton {
+  padding: 12px 20px;
+  background: #777;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.clearButton:hover {
+  background: #555;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 120px;
+  opacity: 0.15;
+  filter: grayscale(100%);
+}
+.input{
+  width: 100%;
+  padding: 12px;
+  padding-right: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.passwordContainer{
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.passwordContainer .input{
+  padding-right: 40px; /* espacio para el ojo */
+}
+
+.ojo{
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+}
+.buttons{
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.button, .clearButton{
+  width: 140px;
+}
