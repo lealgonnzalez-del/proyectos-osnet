@@ -36,6 +36,7 @@ function SimpleTable() {
 
   return (
     <div className = "containerTable" style={{ 
+      
       width: "100%", 
       margin: "40px auto",
       padding: "20px",
@@ -44,78 +45,79 @@ function SimpleTable() {
       boxShadow: "0px 4px 10px rgba (0, 0, 0, 0.2)"
 
       }}>
+        <div className="container2">
+          {/* TITULO */}
+          <h2 style={{ textAlign: "center" }}>Tabla de Usuarios</h2>
 
-      {/* TITULO */}
-      <h2 style={{ textAlign: "center" }}>Tabla de Usuarios</h2>
+          {/* BUSCADOR */}
+          <div style={{ marginBottom: "15px" }}>
+            🔍
+            <input
+              type="text"
+              placeholder="Buscar por ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ marginLeft: "5px", padding: "5px" }}
+            />
+          </div>
 
-      {/* BUSCADOR */}
-      <div style={{ marginBottom: "15px" }}>
-        🔍
-        <input
-          type="text"
-          placeholder="Buscar por ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ marginLeft: "5px", padding: "5px" }}
-        />
+          {/* TABLA */}
+          <table className="table"
+            style={{
+              width: "100%",
+              padding: "20px",
+              backgroundColor: "white",
+              borderCollapse: "collapse",
+              fontSize: "18px"
+            }}
+          >
+
+            <thead>
+              {table.getHeaderGroups().map(headerGroup => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map(header => (
+                    <th
+                      key={header.id}
+                      style={{
+                        padding: "12px",
+                        border: "1px solid black",
+                        background: "#e6e6e6"
+                      }}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+
+            <tbody>
+              {table.getRowModel().rows.map(row => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map(cell => (
+                    <td
+                      key={cell.id}
+                      style={{
+                        padding: "12px",
+                        border: "1px solid black",
+                        textAlign: "center"
+                      }}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+
+          </table>
       </div>
-
-      {/* TABLA */}
-      <table className="table"
-        style={{
-          width: "100%",
-          padding: "20px",
-          backgroundColor: "white",
-          borderCollapse: "collapse",
-          fontSize: "18px"
-        }}
-      >
-
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th
-                  key={header.id}
-                  style={{
-                    padding: "12px",
-                    border: "1px solid black",
-                    background: "#e6e6e6"
-                  }}
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-
-        <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <td
-                  key={cell.id}
-                  style={{
-                    padding: "12px",
-                    border: "1px solid black",
-                    textAlign: "center"
-                  }}
-                >
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-
-      </table>
 
     </div>
   );

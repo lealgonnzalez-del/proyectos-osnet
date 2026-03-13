@@ -1,0 +1,8 @@
+[
+  { "id": 1, "usuario": "admin", "password": "1234" },
+  { "id": 2, "usuario": "eucli", "password": "abcd" },
+  { "id": 3, "usuario": "maria", "password": "5678" },
+  { "id": 4, "usuario": "juan", "password": "1111" },
+  { "id": 5, "usuario": "ana", "password": "2222" },
+  { "id": 6, "usuario": "pedro", "password": "3333" }
+]

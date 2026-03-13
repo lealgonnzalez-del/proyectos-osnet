@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import './App.css';
 import pago from "./imagenes/logo.png";
-import { useNavigate } from "react-router-dom";
-
+import QRUsuario from "./componentes/QRUsuario";
+import usuariosSistema from "./usuarios.json";
 
 function App() {
 
   const [usuario, setUsuario] = useState('');
   const [password, setPassword] = useState('');
   const [mostrarPassword, setMostrarPassword] = useState(false);
-
-  const navigate = useNavigate();
+  const [usuarioQR, setUsuarioQR] = useState(null);
 
   const handleLogin = () => {
 
@@ -19,18 +18,30 @@ function App() {
       return;
     }
 
-    navigate(`/usuario/${usuario}`);
+    const usuarioValido = usuariosSistema.find(
+      (u) => u.usuario === usuario && u.password === password
+    );
+
+    if (!usuarioValido) {
+      alert("Usuario o contraseña incorrecta");
+      return;
+    }
+
+    const secreto = Math.random().toString(36).substring(2, 18);
+
+    const otpURL = `otpauth://totp/MiSistema:${usuarioValido.usuario}?secret=${secreto}&issuer=MiSistema`;
+
+    setUsuarioQR(otpURL); // genera QR
   };
 
   const handleClear = () => {
     setUsuario('');
     setPassword('');
+    setUsuarioQR(null);
   };
 
   return (
     <div className="container">
-
-      
 
       <h1 className="title">Inicio de Sesión</h1>
 
@@ -58,19 +69,26 @@ function App() {
           👁
         </span>
       </div>
-      <div className="buttons">
-          <button className="button" onClick={handleLogin}>
-            Iniciar Sesión
-          </button>
 
-          <button className="clearButton" onClick={handleClear}>
-            Limpiar
-          </button>
+      <div className="buttons">
+
+        <button className="button" onClick={handleLogin}>
+          Iniciar Sesión
+        </button>
+
+        <button className="clearButton" onClick={handleClear}>
+          Limpiar
+        </button>
+
       </div>
 
       <div>
         <img src={pago} alt="logo" className="logo"/>
       </div>
+
+      {usuarioQR && (
+        <QRUsuario usuario={usuarioQR}/>
+      )}
 
     </div>
   );
