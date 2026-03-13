@@ -14,4 +14,5 @@ function QRUsuario({ usuario }) {
   );
 }
 
+
 export default QRUsuario;
