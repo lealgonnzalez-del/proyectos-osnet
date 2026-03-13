@@ -87,7 +87,17 @@ function App() {
       </div>
 
       {usuarioQR && (
-        <QRUsuario usuario={usuarioQR}/>
+        <div className='modal'>
+          <div className="modal-content">
+
+            <QRUsuario usuario={usuarioQR}/>
+            <button className="button" onClick={handleClear}>
+
+            </button>
+
+          </div>
+
+        </div> 
       )}
 
     </div>
