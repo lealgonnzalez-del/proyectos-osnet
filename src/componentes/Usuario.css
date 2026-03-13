@@ -2,6 +2,7 @@
 .container2 h2{
   margin-bottom:40px;
   color:#000000;
+  color:#333;
 }
 
 /* buscador */
@@ -22,6 +23,8 @@
  margin:40px auto;
  padding:200px;
  background:rgb(192, 182, 182);
+ padding:20px;
+ background:white;
  border-radius:8px;
  box-shadow:0 4px 10px rgba(0,0,0,0.2);
 }
