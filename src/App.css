@@ -95,13 +95,13 @@ body {
   gap: 20px;
 }
 
-.logo {
+.osnet {
   position: fixed;
   bottom: 20px;
   right: 20px;
   width: 120px;
-  opacity: 0.15;
-  filter: grayscale(100%);
+  opacity: 0.8;                 /* menos transparente */
+  filter: brightness(0) invert(1);  /* vuelve el logo blanco */
 }
 .input{
   width: 100%;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import pago from "./imagenes/logo.png";
+import pago from "./imagenes/osnet.png";
 import QRUsuario from "./componentes/QRUsuario";
 import usuariosSistema from "./usuarios.json";
 
@@ -83,7 +83,7 @@ function App() {
       </div>
 
       <div>
-        <img src={pago} alt="logo" className="logo"/>
+        <img src={pago} alt="osnet" className="osnet"/>
       </div>
 
       {usuarioQR && (
