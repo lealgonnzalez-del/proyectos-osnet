@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
-
+import "../App.css";
 
 function Clientes() {
 
@@ -42,19 +42,13 @@ function Clientes() {
   });
 
   return (
-    <div className = "containerTable" style={{ 
+    <div className = "containerTable" >
       
-      width: "100%", 
-      margin: "40px auto",
-      padding: "20px",
-      backgroundColor: "white",
-      borderRadius: "8px",
-      boxShadow: "0px 4px 10px rgba (0, 0, 0, 0.2)"
-
-      }}>
+      
         <div className="container2">
           {/* TITULO */}
-          <h2 style={{ textAlign: "center" }}>Tabla Clientes</h2>
+
+          <h2>Tabla Clientes</h2>
 
           {/* BUSCADOR */}
           <div className = "searchBox" >
@@ -69,26 +63,14 @@ function Clientes() {
           </div>
 
           {/* TABLA */}
-          <table className="table"
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              fontSize: "18px"
-            }}
-          >
+          <table className="table">
 
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map(header => (
                     <th
-                      key={header.id}
-                      style={{
-                        padding: "12px",
-                        border: "1px solid black",
-                        background: "#3c4549"
-                      }}
-                    >
+                      key={header.id}>
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
@@ -103,14 +85,8 @@ function Clientes() {
               {table.getRowModel().rows.map(row => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map(cell => (
-                    <td
-                      key={cell.id}
-                      style={{
-                        padding: "12px",
-                        border: "1px solid black",
-                        textAlign: "center"
-                      }}
-                    >
+                    <td key={cell.id}> 
+                    
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

@@ -2,42 +2,46 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
-function Login(){
+function Login() {
 
-  const [usuario,setUsuario] = useState("");
-  const [password,setPassword] = useState("");
-  const [mostrarPassword,setMostrarPassword] = useState(false);
+  const [usuario, setUsuario] = useState("");
+  const [password, setPassword] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const navigate = useNavigate();
 
   const iniciarSesion = () => {
 
-    if(usuario === "" || password === ""){
+    if (usuario.trim() === "" || password.trim() === "") {
       alert("Ingrese usuario y contraseña");
       return;
     }
 
-    navigate("/clientes"); // ahora entra directo
+    // redirige a la tabla
+    navigate("/clientes");
   };
 
-  const limpiar = () =>{
+  const limpiar = () => {
     setUsuario("");
     setPassword("");
   };
 
-  return(
+  return (
 
     <div className="container">
 
       <h1 className="title">Inicio de Sesión</h1>
 
+      {/* USUARIO */}
       <input
         className="input"
+        type="text"
         placeholder="Usuario"
         value={usuario}
-        onChange={(e)=>setUsuario(e.target.value)}
+        onChange={(e) => setUsuario(e.target.value)}
       />
 
+      {/* PASSWORD */}
       <div className="passwordContainer">
 
         <input
@@ -45,40 +49,46 @@ function Login(){
           type={mostrarPassword ? "text" : "password"}
           placeholder="Contraseña"
           value={password}
-          onChange={(e)=>setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <span
           className="ojo"
-          onClick={()=>setMostrarPassword(!mostrarPassword)}
+          onClick={() => setMostrarPassword(!mostrarPassword)}
         >
           👁
         </span>
 
       </div>
 
+      {/* BOTONES */}
       <div className="buttons">
 
-        <button className="button" onClick={iniciarSesion}>
+        <button
+          className="button"
+          onClick={iniciarSesion}
+        >
           Iniciar Sesión
         </button>
 
-        <button className="clearButton" onClick={limpiar}>
+        <button
+          className="clearButton"
+          onClick={limpiar}
+        >
           Limpiar
         </button>
 
       </div>
 
+      {/* LOGO */}
       <img
         src={require("../imagenes/osnet.png")}
         className="osnet"
-        alt="logo"
+        alt="Logo OSNET"
       />
 
     </div>
-
   );
-
 }
 
 export default Login;
