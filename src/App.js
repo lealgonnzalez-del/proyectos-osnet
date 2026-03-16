@@ -10,6 +10,8 @@ function App() {
   const [password, setPassword] = useState('');
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [usuarioQR, setUsuarioQR] = useState(null);
+  const [codigoExtra, setCodigoExtra] = useState('');
+  const [codigoLogin, setCodigoLogin] = useState('');
 
   const handleLogin = () => {
 
@@ -54,6 +56,7 @@ function App() {
       />
 
       <div className="passwordContainer">
+        
         <input
           type={mostrarPassword ? "text" : "password"}
           placeholder="Contraseña"
@@ -61,13 +64,23 @@ function App() {
           onChange={(e) => setPassword(e.target.value)}
           className="input"
         />
-
         <span
           className="ojo"
           onClick={() => setMostrarPassword(!mostrarPassword)}
         >
           👁
         </span>
+
+
+        <input 
+          type='text'
+          placeholder='Codigo de Verificacion'
+          value={codigoLogin}
+          onChange={(e) => setCodigoLogin(e.target.value)}
+          className='codigo'
+        />
+
+        
       </div>
 
       <div className="buttons">
@@ -90,8 +103,17 @@ function App() {
         <div className='modal'>
           <div className="modal-content">
 
-            <QRUsuario usuario={usuarioQR}/>
+            <input
+            type='text'
+            placeholder='Ingrese codigo'
+            value={codigoExtra}
+            onChange={(e) => setCodigoExtra(e.target.value)}
+            className='input'
+            />
+
+            <QRUsuario usuario={usuarioQR + '&codigo=' + codigoExtra}/>
             <button className="button" onClick={handleClear}>
+              Cerrar
 
             </button>
 
