@@ -1,3 +1,5 @@
+/* ===== ESTILO GENERAL ===== */
+
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
@@ -6,31 +8,42 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  
+
 }
 
+
+/* ===== CONTENEDOR LOGIN ===== */
+
 .container {
-  width: 100%;
+  width: 90%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 20px;
 }
+
+
+/* ===== TITULO ===== */
 
 .title {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   font-weight: normal;
   color: white;
 }
+
+
+/* ===== INPUTS ===== */
 
 .input {
   width: 100%;
   max-width: 350px;
   padding: 12px;
   margin-bottom: 20px;
+
   border-radius: 8px;
   border: 2px solid #ddd;
+
   font-size: 16px;
   transition: 0.3s;
   box-sizing: border-box;
@@ -43,15 +56,12 @@ body {
 .input:focus {
   border-color: #0879db;
   outline: none;
-  box-shadow: 0px 0px 8px rgba(76, 132, 175, 0.787);
+  box-shadow: 0px 0px 8px rgba(76,132,175,0.7);
 }
 
-.inputError {
-  border-color: red;
-  background-color: #ffe6e6;
-}
 
-/* Contenedor contraseña */
+/* ===== CONTENEDOR PASSWORD ===== */
+
 .passwordContainer {
   position: relative;
   width: 100%;
@@ -62,44 +72,53 @@ body {
   padding-right: 40px;
 }
 
-/* Ojo mostrar contraseña */
+
+/* ===== ICONO OJO ===== */
+
 .ojo {
   position: absolute;
   right: 12px;
-  top: 50%;
-  transform: translateY(-180%);
+  top: 15%;
   cursor: pointer;
   font-size: 18px;
 }
 
-/* Campo código */
+
+/* ===== CAMPO CODIGO ===== */
+
 .codigo {
-  width: 180px;              /* más pequeño */
+  width: 180px;
   padding: 10px;
   margin: 10px auto 20px auto;
+
   display: block;
-  border-radius: 20px;      /* bordes más suaves */
+
+  border-radius: 20px;
   border: 2px solid #4facfe;
+
   font-size: 14px;
-  text-align: center;       /* centra el código */
+  text-align: center;
+
   background: #f5f9ff;
   transition: all 0.3s ease;
-  font-family: Arial, Helvetica, sans-serif;
 }
+
+.codigo:hover {
+  border-color: #2f8df5;
+}
+
 .codigo:focus {
   outline: none;
   border-color: #0879db;
   box-shadow: 0 0 8px rgba(8,121,219,0.4);
   background: white;
 }
-.codigo:hover {
-  border-color: #2f8df5;
-}
 
-/* Botones */
+
+/* ===== BOTONES ===== */
+
 .buttons {
   display: flex;
-  justify-content: center;
   gap: 15px;
   margin-top: 10px;
 }
@@ -107,24 +126,28 @@ body {
 .button {
   padding: 12px 20px;
   width: 140px;
+
   background: #4facfe;
   border: none;
   color: white;
+
   border-radius: 8px;
   cursor: pointer;
   transition: 0.3s;
 }
 
 .button:hover {
-  background: #2f8df5;
+  background: #0c1117;
 }
 
 .clearButton {
   padding: 12px 20px;
   width: 140px;
+
   background: #777;
   border: none;
   color: white;
+
   border-radius: 8px;
   cursor: pointer;
   transition: 0.3s;
@@ -134,33 +157,134 @@ body {
   background: #555;
 }
 
-/* Logo */
+
+/* ===== LOGO ===== */
+
 .osnet {
   position: fixed;
   bottom: 20px;
   right: 20px;
+
   width: 120px;
   opacity: 0.8;
-  filter: brightness(0) invert(1);
+
+  filter: brightness(0) saturate(100%)
+          invert(16%) sepia(96%)
+          saturate(3000%) hue-rotate(210deg)
+          brightness(70%) contrast(120%);
 }
 
-/* Modal QR */
+
+/* ===== MODAL QR ===== */
+
 .modal {
   position: fixed;
   top: 0;
   left: 0;
+
   width: 100%;
   height: 100%;
+
   background: rgba(0,0,0,0.4);
+
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+
+/* ===== CONTENIDO MODAL ===== */
+
 .modal-content {
   background: white;
   padding: 30px;
-  border-radius: 10px;
+
+  border-radius: 12px;
   text-align: center;
+
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+/* TITULO */
+
+.tituloTabla{
+
+  text-align:center;
+  margin-bottom:25px;
+  color:#333;
+
+}
+
+
+/* BUSCADOR */
+
+.searchBox{
+
+  margin-bottom:20px;
+  font-size:16px;
+
+}
+
+.searchBox input{
+
+  margin-left:8px;
+  padding:8px 12px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  outline:none;
+
+}
+
+.searchBox input:focus{
+
+  border-color:#126dbc;
+  box-shadow:0px 0px 5px rgba(79,172,254,0.4);
+
+}
+/* EFECTO HOVER */
+
+.table tbody tr:hover{
+
+  background:#3079e6;
+
+}
+
+.containerTabla{
+  width: 90%;
+  margin: 40px auto;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* encabezado */
+.table thead{
+  background:#2f6f88;
+  color:white;
+}
+
+/* celdas */
+.table th,
+.table td{
+  padding:12px;
+  border:1px solid #cfd8dc;
+  text-align:center;
+}
+
+/* filas alternadas */
+.table tbody tr:nth-child(even){
+  background:#e7f2f8;
+}
+
+.table tbody tr:nth-child(odd){
+  background:#ffffff;
+}
+
+/* efecto hover */
+.table tbody tr:hover{
+  background:#cfe8f3;
+  transition:0.2s;
 }

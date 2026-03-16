@@ -1,129 +1,39 @@
-import React, { useState } from 'react';
-import './App.css';
-import pago from "./imagenes/osnet.png";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import QRUsuario from "./componentes/QRUsuario";
-import usuariosSistema from "./usuarios.json";
 
-function App() {
+function QRPage() {
 
-  const [usuario, setUsuario] = useState('');
-  const [password, setPassword] = useState('');
-  const [mostrarPassword, setMostrarPassword] = useState(false);
-  const [usuarioQR, setUsuarioQR] = useState(null);
-  const [codigoExtra, setCodigoExtra] = useState('');
-  const [codigoLogin, setCodigoLogin] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const usuario = location.state?.usuario;
 
-    if (usuario.trim() === '' || password.trim() === '') {
-      alert('Por favor completa todos los campos');
-      return;
-    }
+  const secreto = Math.random().toString(36).substring(2,18);
 
-    const usuarioValido = usuariosSistema.find(
-      (u) => u.usuario === usuario && u.password === password
-    );
+  const otpURL =
+  `otpauth://totp/MiSistema:${usuario}?secret=${secreto}&issuer=MiSistema`;
 
-    if (!usuarioValido) {
-      alert("Usuario o contraseña incorrecta");
-      return;
-    }
-
-    const secreto = Math.random().toString(36).substring(2, 18);
-
-    const otpURL = `otpauth://totp/MiSistema:${usuarioValido.usuario}?secret=${secreto}&issuer=MiSistema`;
-
-    setUsuarioQR(otpURL); // genera QR
-  };
-
-  const handleClear = () => {
-    setUsuario('');
-    setPassword('');
-    setUsuarioQR(null);
+  const entrarSistema = () => {
+    navigate("/clientes");
   };
 
   return (
+
     <div className="container">
 
-      <h1 className="title">Inicio de Sesión</h1>
+      <h2>Escanea el QR</h2>
 
-      <input
-        type="text"
-        placeholder="Usuario"
-        value={usuario}
-        onChange={(e) => setUsuario(e.target.value)}
-        className="input"
-      />
+      <QRUsuario usuario={otpURL}/>
 
-      <div className="passwordContainer">
-        
-        <input
-          type={mostrarPassword ? "text" : "password"}
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="input"
-        />
-        <span
-          className="ojo"
-          onClick={() => setMostrarPassword(!mostrarPassword)}
-        >
-          👁
-        </span>
-
-
-        <input 
-          type='text'
-          placeholder='Codigo de Verificacion'
-          value={codigoLogin}
-          onChange={(e) => setCodigoLogin(e.target.value)}
-          className='codigo'
-        />
-
-        
-      </div>
-
-      <div className="buttons">
-
-        <button className="button" onClick={handleLogin}>
-          Iniciar Sesión
-        </button>
-
-        <button className="clearButton" onClick={handleClear}>
-          Limpiar
-        </button>
-
-      </div>
-
-      <div>
-        <img src={pago} alt="osnet" className="osnet"/>
-      </div>
-
-      {usuarioQR && (
-        <div className='modal'>
-          <div className="modal-content">
-
-            <input
-            type='text'
-            placeholder='Ingrese codigo'
-            value={codigoExtra}
-            onChange={(e) => setCodigoExtra(e.target.value)}
-            className='input'
-            />
-
-            <QRUsuario usuario={usuarioQR + '&codigo=' + codigoExtra}/>
-            <button className="button" onClick={handleClear}>
-              Cerrar
-
-            </button>
-
-          </div>
-
-        </div> 
-      )}
+      <button className="button" onClick={entrarSistema}>
+        Continuar
+      </button>
 
     </div>
+
   );
+
 }
 
-export default App;
+export default QRPage;
