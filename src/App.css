@@ -5,17 +5,18 @@ body{
   font-family: Arial, Helvetica, sans-serif;
   background: linear-gradient(135deg,#39b7e3,#00c9d8);
   min-height:100vh;
-
   display:flex;
   justify-content:center;
   align-items:center;
+  height: 60vh;
+  overflow-y: auto;
 }
 
 
 /* ===== CONTENEDOR LOGIN ===== */
 
 .container{
-  width:100%;
+  width:160%;
   max-width:350px;
   margin:auto;
   text-align:center;
@@ -139,13 +140,11 @@ body{
 /* ===== CONTENEDOR TABLA ===== */
 
 .containerTable{
-  width: 90%;
-  margin: 40px auto;
-  padding: 25px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0px 6px 20px rgba(0,0,0,0.15);
-  min-height: 80vh;
+  width:100%;
+  min-height:100vh;
+  margin:0;
+  padding:40px;
+  box-sizing:border-box;
 }
 
 
@@ -161,16 +160,22 @@ body{
 /* BUSCADOR */
 
 .searchBox{
-  margin-bottom:20px;
-  font-size:16px;
+  display:grid;
+  grid-template-columns: 40px 120px 220px 200px 150px 200px 150px;
+  gap:10px;
+  margin-bottom:10px;
+  align-items:center;
+}
+
+.searchBox span{
+  text-align:center;
+  font-size:18px;
 }
 
 .searchBox input{
-  margin-left:10px;
   padding:8px 12px;
   border-radius:6px;
   border:1px solid #ccc;
-  outline:none;
 }
 
 .searchBox input:focus{
@@ -182,7 +187,7 @@ body{
 /* TABLA */
 
 .table{
-  width:90%;
+  width:100%;
   border-collapse:collapse;
   font-size:16px;
   
