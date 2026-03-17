@@ -1,47 +1,127 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import QRUsuario from "./QRUsuario";
-import "../App.css";
+import api from "../services/api";
 
-function QRPage(){
+function QRPage() {
+  const [qr, setQr] = useState("");
+  const [codigo, setCodigo] = useState("");
+  const [error, setError] = useState("");
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  const usuario = location.state?.usuario || "usuario";
+  const userId = location.state?.userId;
 
-  const secreto = Math.random().toString(36).substring(2,18);
+  // 🔐 Generar QR automáticamente
+  useEffect(() => {
+    const generarQR = async () => {
+      try {
+        const res = await api.get("/auth/mfa/generate", {
+          params: { userId }
+        });
 
-  const otpURL =
-  `otpauth://totp/MiSistema:${usuario}?secret=${secreto}&issuer=MiSistema`;
+        console.log("QR DATA:", res.data);
 
-  // FUNCION BOTON CERRAR
-  const cerrarModal = () => {
-    navigate("/");   // vuelve al login
+        // 🔥 SOPORTA TODOS LOS FORMATOS DE BACKEND
+        const qrRaw =
+          res.data.qr ||
+          res.data.qrCode ||
+          res.data.data?.data || // 👈 TU CASO
+          res.data.data;
+
+        if (qrRaw) {
+          const qrBase64 = qrRaw.startsWith("data:image")
+            ? qrRaw
+            : `data:image/png;base64,${qrRaw}`;
+
+          setQr(qrBase64);
+        } else {
+          setError("El backend no envió un QR válido");
+        }
+
+      } catch (error) {
+        console.error("Error generando QR:", error);
+        setError("No se pudo generar el QR");
+      }
+    };
+
+    if (userId) {
+      generarQR();
+    }
+  }, [userId]);
+
+  // 🔐 Verificar código MFA
+  const verificarCodigo = async () => {
+    if (codigo.trim() === "") {
+      setError("Ingrese el código MFA");
+      return;
+    }
+
+    try {
+      const res = await api.post("/auth/mfa/verify", {
+        userId,
+        mfaCode: codigo,
+      });
+
+      console.log("MFA OK:", res.data);
+
+      localStorage.setItem("token", res.data.access_token);
+
+      alert("Autenticación completa");
+
+      navigate("/clientes");
+
+    } catch (error) {
+      console.error("Error MFA:", error);
+
+      if (error.response?.status === 401) {
+        setError("Código incorrecto");
+      } else {
+        setError("Error verificando MFA");
+      }
+    }
   };
 
-  return(
-
-    <div className="modal">
-
-      <div className="modal-content">
-
-        <input placeholder="Ingrese codigo"/>
-
-        <h3>Escanea QR</h3>
-
-        <QRUsuario usuario={otpURL}/>
-
-        <button onClick={cerrarModal}>
-          Cerrar
+  // ❌ Si no hay userId
+  if (!userId) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <h2>Error: acceso inválido</h2>
+        <button onClick={() => navigate("/")}>
+          Volver al login
         </button>
-
       </div>
+    );
+  }
 
+  return (
+    <div className="container">
+      <h2>Escanea el QR</h2>
+
+      {/* QR */}
+      {qr ? (
+        <img src={qr} alt="QR MFA" />
+      ) : (
+        <p>Cargando QR...</p>
+      )}
+
+      {/* Input código */}
+      <input
+        type="text"
+        placeholder="Código de 6 dígitos"
+        value={codigo}
+        onChange={(e) => setCodigo(e.target.value)}
+      />
+
+      {/* Error */}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {/* Botón */}
+      <button onClick={verificarCodigo}>
+        Verificar
+      </button>
     </div>
-
   );
-
 }
 
 export default QRPage;
