@@ -11,25 +11,27 @@ function QRPage() {
   const navigate = useNavigate();
 
   const userId = location.state?.userId;
+  // Extraemos el token para las peticiones seguras
+  const token = localStorage.getItem("token");
 
   // 🔐 Generar QR automáticamente
   useEffect(() => {
     const generarQR = async () => {
       try {
+        setError(""); // Limpiar errores previos
         const res = await api.get("/auth/mfa/generate", {
-          params: { userId }
+          params: { userId },
+          headers: { Authorization: `Bearer ${token}` } // 👈 Vital para evitar el 401
         });
 
         console.log("QR DATA:", res.data);
 
-        // 🔥 SOPORTA TODOS LOS FORMATOS DE BACKEND
-        const qrRaw =
-          res.data.qr ||
-          res.data.qrCode ||
-          res.data.data?.data || // 👈 TU CASO
-          res.data.data;
+        // Intentar extraer el string del QR de diferentes estructuras posibles
+        const qrRaw = res.data?.qr || res.data?.qrCode || res.data?.data || res.data;
 
         if (qrRaw) {
+          // Si el backend envía el string 'otpauth://', se debería usar qrcode.react
+          // Si envía la imagen base64, se procesa así:
           const qrBase64 = qrRaw.startsWith("data:image")
             ? qrRaw
             : `data:image/png;base64,${qrRaw}`;
@@ -41,19 +43,25 @@ function QRPage() {
 
       } catch (error) {
         console.error("Error generando QR:", error);
-        setError("No se pudo generar el QR");
+        if (error.response?.status === 401) {
+          setError("Sesión no autorizada o expirada");
+        } else {
+          setError("No se pudo conectar con el servidor para generar el QR");
+        }
       }
     };
 
     if (userId) {
       generarQR();
     }
-  }, [userId]);
+  }, [userId, token]);
 
   // 🔐 Verificar código MFA
   const verificarCodigo = async () => {
-    if (codigo.trim() === "") {
-      setError("Ingrese el código MFA");
+    setError(""); // Limpiar errores antes de intentar
+
+    if (codigo.trim().length < 6) {
+      setError("Ingrese el código completo de 6 dígitos");
       return;
     }
 
@@ -61,35 +69,33 @@ function QRPage() {
       const res = await api.post("/auth/mfa/verify", {
         userId,
         mfaCode: codigo,
+      }, {
+        headers: { Authorization: `Bearer ${token}` } // 👈 También necesario aquí
       });
 
       console.log("MFA OK:", res.data);
 
-      localStorage.setItem("token", res.data.access_token);
+      // Si el backend devuelve un nuevo token tras el MFA, lo actualizamos
+      if (res.data.access_token) {
+        localStorage.setItem("token", res.data.access_token);
+      }
 
       alert("Autenticación completa");
-
       navigate("/clientes");
 
     } catch (error) {
       console.error("Error MFA:", error);
-
-      if (error.response?.status === 401) {
-        setError("Código incorrecto");
-      } else {
-        setError("Error verificando MFA");
-      }
+      const mensajeError = error.response?.data?.message || "Error verificando MFA";
+      setError(error.response?.status === 401 ? "Código incorrecto" : mensajeError);
     }
   };
 
-  // ❌ Si no hay userId
+  // ❌ Si no hay userId o no hay acceso
   if (!userId) {
     return (
-      <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <div className="container" style={{ textAlign: "center", marginTop: "50px" }}>
         <h2>Error: acceso inválido</h2>
-        <button onClick={() => navigate("/")}>
-          Volver al login
-        </button>
+        <button onClick={() => navigate("/")}>Volver al login</button>
       </div>
     );
   }
@@ -98,28 +104,29 @@ function QRPage() {
     <div className="container">
       <h2>Escanea el QR</h2>
 
-      {/* QR */}
-      {qr ? (
-        <img src={qr} alt="QR MFA" />
-      ) : (
-        <p>Cargando QR...</p>
-      )}
+      <div className="qr-container">
+        {qr ? (
+          <img src={qr} alt="QR MFA" style={{ width: "250px", height: "250px" }} />
+        ) : (
+          <p>{error ? "Error al cargar" : "Cargando QR..."}</p>
+        )}
+      </div>
 
-      {/* Input código */}
-      <input
-        type="text"
-        placeholder="Código de 6 dígitos"
-        value={codigo}
-        onChange={(e) => setCodigo(e.target.value)}
-      />
+      <div className="input-group">
+        <input
+          type="text"
+          placeholder="Código de 6 dígitos"
+          maxLength={6}
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))} // Solo números
+        />
 
-      {/* Error */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="error-text" style={{ color: "red" }}>{error}</p>}
 
-      {/* Botón */}
-      <button onClick={verificarCodigo}>
-        Verificar
-      </button>
+        <button onClick={verificarCodigo} className="btn-verify">
+          Verificar
+        </button>
+      </div>
     </div>
   );
 }
