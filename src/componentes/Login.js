@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import api from "../services/api";
+import osnetLogo from "../imagenes/osnet.png";
 
 function Login() {
 
@@ -14,7 +15,8 @@ function Login() {
   const iniciarSesion = async () => {
     console.log("CLICK FUNCIONA");
 
-    // ✅ Validación básica
+    localStorage.removeItem("mfa_user");
+
     if (usuario.trim() === "" || password.trim() === "") {
       alert("Ingrese usuario y contraseña");
       return;
@@ -28,28 +30,38 @@ function Login() {
 
       console.log("RESPUESTA LOGIN:", res.data);
 
-      // 🟡 CASO 1: MFA requerido
+      // 🔥 CASO MFA
       if (res.data.mfaRequired) {
+
+        // ✅ GUARDAR TOKEN TEMPORAL
+        if (res.data.access_token) {
+          localStorage.setItem("token", res.data.access_token);
+        }
+
+        // ✅ GUARDAR USER ID
+        localStorage.setItem("mfa_user", res.data.userId);
+
         navigate("/qr", {
-          state: { userId: res.data.userId }
+          state: { 
+            userId: res.data.userId,
+            qrCodeUrl: res.data.qrCodeUrl,
+            firstTime: res.data.firstTime
+          }
         });
+
         return;
       }
 
-      // 🟢 CASO 2: Login normal
+      // 🟢 LOGIN NORMAL
       if (res.data.access_token) {
 
-        // guardar token
         localStorage.setItem("token", res.data.access_token);
 
-        // guardar usuario (opcional)
         if (res.data.user) {
           localStorage.setItem("user", JSON.stringify(res.data.user));
         }
 
         alert("Login exitoso");
-
-        // 🔥 CORRECCIÓN AQUÍ (tenías un typo)
         navigate("/clientes");
       }
 
@@ -57,9 +69,6 @@ function Login() {
       console.error("ERROR COMPLETO:", error);
 
       if (error.response) {
-        console.log("DATA:", error.response.data);
-        console.log("STATUS:", error.response.status);
-
         if (error.response.status === 401) {
           alert("Usuario o contraseña incorrectos");
         } else if (error.response.status === 500) {
@@ -82,51 +91,59 @@ function Login() {
   };
 
   return (
-    <div className="container">
+    <>
+      <div className="container">
 
-      <h1 className="title">Inicio de Sesión</h1>
-
-      <input
-        className="input"
-        type="text"
-        placeholder="Usuario"
-        value={usuario}
-        onChange={(e) => setUsuario(e.target.value)}
-      />
-
-      <div className="passwordContainer">
+        <h1 className="title">Inicio de Sesión</h1>
 
         <input
           className="input"
-          type={mostrarPassword ? "text" : "password"}
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          type="text"
+          placeholder="Usuario"
+          value={usuario}
+          onChange={(e) => setUsuario(e.target.value)}
         />
 
-        <span
-          className="ojo"
-          onClick={() => setMostrarPassword(!mostrarPassword)}
-          style={{ cursor: "pointer" }}
-        >
-          👁
-        </span>
+        <div className="passwordContainer">
+
+          <input
+            className="input"
+            type={mostrarPassword ? "text" : "password"}
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <span
+            className="ojo"
+            onClick={() => setMostrarPassword(!mostrarPassword)}
+            style={{ cursor: "pointer" }}
+          >
+            👁
+          </span>
+
+        </div>
+
+        <div className="buttons">
+
+          <button className="button" onClick={iniciarSesion}>
+            Iniciar Sesión
+          </button>
+
+          <button className="clearButton" onClick={limpiar}>
+            Limpiar
+          </button>
+
+        </div>
 
       </div>
 
-      <div className="buttons">
-
-        <button className="button" onClick={iniciarSesion}>
-          Iniciar Sesión
-        </button>
-
-        <button className="clearButton" onClick={limpiar}>
-          Limpiar
-        </button>
-
-      </div>
-
-    </div>
+      <img 
+        src={osnetLogo}
+        alt="OSNET" 
+        className="osnet"
+      />
+    </>
   );
 }
 

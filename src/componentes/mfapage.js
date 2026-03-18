@@ -8,6 +8,8 @@ function MfaPage() {
   const location = useLocation();
 
   const userId = location.state?.userId;
+  const qrCodeUrl = location.state?.qrCodeUrl;
+  const firstTime = location.state?.firstTime;
 
   const verificarCodigo = async () => {
     if (codigo.trim() === "") {
@@ -28,7 +30,8 @@ function MfaPage() {
 
       alert("Autenticación completa");
 
-      navigate("/qr");
+      // ✅ CORRECTO
+      navigate("/clientes");
 
     } catch (error) {
       console.error("Error MFA:", error);
@@ -44,6 +47,14 @@ function MfaPage() {
   return (
     <div className="container">
       <h2>Verificación MFA</h2>
+
+      {/* 🔥 MOSTRAR QR SOLO LA PRIMERA VEZ */}
+      {firstTime && qrCodeUrl && (
+        <div style={{ marginBottom: "20px" }}>
+          <p>Escanea este código con Microsoft Authenticator</p>
+          <img src={qrCodeUrl} alt="QR MFA" />
+        </div>
+      )}
 
       <input
         className="input"

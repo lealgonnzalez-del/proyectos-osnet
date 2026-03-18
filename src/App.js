@@ -4,6 +4,7 @@ import Clientes from "./componentes/Clientes";
 import MfaPage from "./componentes/mfapage";
 import QRPage from "./componentes/QRPage";
 
+
 function App() {
   return (
     <BrowserRouter>

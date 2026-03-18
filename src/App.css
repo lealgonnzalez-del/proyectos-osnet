@@ -216,3 +216,97 @@ body{
 .table tbody tr:hover{
   background:#d7edf7;
 }
+/* ===== QR OVERLAY UI ===== */
+
+.qr-overlay-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(0, 0, 0, 0.3); /* fondo oscuro */
+  backdrop-filter: blur(6px); /* difuminado fondo */
+  z-index: 999;
+}
+
+/* TARJETA */
+.qr-card {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  text-align: center;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: fadeIn 0.4s ease;
+}
+
+.qr-card h2 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* CONTENEDOR QR */
+.qr-box {
+  position: relative;
+  display: inline-block;
+}
+
+/* WRAPPER QR */
+.qr-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* QR DIFUMINADO */
+.qr-img-canvas {
+  display: block;
+  filter: blur(2px) brightness(0.9);
+  transition: 0.3s;
+}
+
+/* CAPA ENCIMA */
+.qr-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+
+  border-radius: 12px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+
+  pointer-events: none;
+}
+
+/* OPCIONAL: texto encima */
+.qr-overlay::after {
+  content: "Escanea para activar MFA";
+}
+
+/* ANIMACIÓN */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
