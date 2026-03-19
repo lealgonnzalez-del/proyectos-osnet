@@ -1,29 +1,31 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "../App.css";
+import osnetLogo from "../imagenes/osnet.png";
 
 function QRPage() {
-  const [qr, setQr] = useState("");
+  const [qr, setQr] = useState(null);
   const [codigo, setCodigo] = useState("");
   const [error, setError] = useState("");
 
-  const location = useLocation();
   const navigate = useNavigate();
 
-  const userId =
-    location.state?.userId || localStorage.getItem("mfa_user");
-
-  const qrCodeUrl = location.state?.qrCodeUrl;
+  const userId = localStorage.getItem("mfa_user");
+  const qrCodeUrl = localStorage.getItem("qr");
 
   useEffect(() => {
-    console.log("STATE:", location.state);
+    if (!userId) {
+      navigate("/");
+      return;
+    }
 
     if (qrCodeUrl) {
       setQr(qrCodeUrl);
     } else {
-      setError("No se recibió el QR desde el login");
+      setQr(null);
     }
-  }, [qrCodeUrl, location.state]);
+  }, [userId, qrCodeUrl, navigate]);
 
   const verificarCodigo = async () => {
     setError("");
@@ -39,19 +41,17 @@ function QRPage() {
         mfaCode: codigo,
       });
 
-      console.log("MFA OK:", res.data);
-
       if (res.data.access_token) {
         localStorage.setItem("token", res.data.access_token);
-        localStorage.removeItem("mfa_user");
       }
+
+      localStorage.removeItem("mfa_user");
+      localStorage.removeItem("qr");
 
       alert("Login completo");
       navigate("/clientes");
 
     } catch (error) {
-      console.error("Error MFA:", error);
-
       if (error.response?.status === 401) {
         setError("Código incorrecto");
       } else {
@@ -60,49 +60,57 @@ function QRPage() {
     }
   };
 
-  if (!userId) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "50px" }}>
-        <h2>Error: acceso inválido</h2>
-        <button onClick={() => navigate("/")}>
-          Volver al login
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <div className="container">
-      <h2>Escanea el QR</h2>
+    <>
+      <div className="container">
 
-      <div className="qr-container">
-        {qr ? (
-          <img
-            src={qr}
-            alt="QR MFA"
-            style={{ width: "250px" }}
+        <h2 className="qr-title">
+          {qr ? "Escanea el QR" : "Ingresa tu código de verificación"}
+        </h2>
+
+        <div className="qr-line"></div>
+
+        <div className="qr-container">
+          {qr && (
+            <img
+              src={qr}
+              alt="QR MFA"
+              className="qr-img"
+            />
+          )}
+        </div>
+
+        <div className="qr-form">
+          <input
+            type="text"
+            placeholder="Código de 6 dígitos"
+            maxLength={6}
+            value={codigo}
+            className="qr-input"
+            onChange={(e) =>
+              setCodigo(e.target.value.replace(/\D/g, ""))
+            }
           />
-        ) : (
-          <p>{error || "Cargando QR..."}</p>
-        )}
+
+          <button
+            className="qr-button"
+            onClick={verificarCodigo}
+          >
+            Verificar
+          </button>
+        </div>
+
+        {error && <p className="qr-error">{error}</p>}
+
       </div>
 
-      <input
-        type="text"
-        placeholder="Código de 6 dígitos"
-        maxLength={6}
-        value={codigo}
-        onChange={(e) =>
-          setCodigo(e.target.value.replace(/\D/g, ""))
-        }
+      {/* 🔥 LOGO CORRECTO */}
+      <img 
+        src={osnetLogo}
+        alt="OSNET"
+        className="osnet"
       />
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <button onClick={verificarCodigo}>
-        Verificar
-      </button>
-    </div>
+    </>
   );
 }
 

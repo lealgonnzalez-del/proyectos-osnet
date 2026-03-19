@@ -12,7 +12,7 @@ function Clientes() {
 
   const navigate = useNavigate();
 
-  // 🔎 Estados de filtros
+  // 🔎 FILTROS
   const [searchId, setSearchId] = useState("");
   const [searchCliente, setSearchCliente] = useState("");
   const [searchTipo, setSearchTipo] = useState("");
@@ -25,7 +25,7 @@ function Clientes() {
 
   const token = localStorage.getItem("token");
 
-  // 🚀 FETCH CON FILTROS (BACKEND)
+  // 🚀 FETCH
   useEffect(() => {
 
     if (!token) {
@@ -46,7 +46,6 @@ function Clientes() {
         if (searchAgente) params.append("agent", searchAgente);
 
         const url = `http://localhost:3000/records?${params.toString()}`;
-        console.log("URL:", url);
 
         const res = await fetch(url, {
           headers: {
@@ -61,7 +60,6 @@ function Clientes() {
         }
 
         const result = await res.json();
-        console.log("DATOS BACKEND:", result);
 
         if (Array.isArray(result)) {
           setData(result);
@@ -80,7 +78,7 @@ function Clientes() {
 
   }, [searchId, searchCliente, searchTipo, searchMonto, searchFecha, searchAgente, token, navigate]);
 
-  // 📊 COLUMNAS CORRECTAS (BACKEND)
+  // 📊 COLUMNAS
   const columns = useMemo(() => [
     { header: "Id", accessorKey: "id" },
     { header: "Cliente", accessorKey: "client" },
@@ -94,9 +92,8 @@ function Clientes() {
     { header: "Agente", accessorKey: "agent" }
   ], []);
 
-  // 📋 TABLA
   const table = useReactTable({
-    data: data,
+    data,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -110,19 +107,33 @@ function Clientes() {
 
         <h2>Tabla Clientes</h2>
 
-        {/* 🔎 FILTROS */}
-        <div className="searchBox">
-          <input placeholder="ID" value={searchId} onChange={(e) => setSearchId(e.target.value)} />
-          <input placeholder="Cliente" value={searchCliente} onChange={(e) => setSearchCliente(e.target.value)} />
-          <input placeholder="Tipo" value={searchTipo} onChange={(e) => setSearchTipo(e.target.value)} />
-          <input placeholder="Monto mínimo" value={searchMonto} onChange={(e) => setSearchMonto(e.target.value)} />
-          <input placeholder="Fecha (YYYY-MM-DD)" value={searchFecha} onChange={(e) => setSearchFecha(e.target.value)} />
-          <input placeholder="Agente" value={searchAgente} onChange={(e) => setSearchAgente(e.target.value)} />
-        </div>
-
-        {/* 📊 TABLA */}
+        {/* 📊 TABLA COMPLETA */}
         <table className="table">
           <thead>
+
+            {/* 🔥 FILA DE FILTROS */}
+            <tr className="filter-row">
+              <th>
+                <input value={searchId} onChange={(e) => setSearchId(e.target.value)} placeholder="ID" />
+              </th>
+              <th>
+                <input value={searchCliente} onChange={(e) => setSearchCliente(e.target.value)} placeholder="Cliente" />
+              </th>
+              <th>
+                <input value={searchTipo} onChange={(e) => setSearchTipo(e.target.value)} placeholder="Tipo" />
+              </th>
+              <th>
+                <input value={searchMonto} onChange={(e) => setSearchMonto(e.target.value)} placeholder="Monto mínimo" />
+              </th>
+              <th>
+                <input value={searchFecha} onChange={(e) => setSearchFecha(e.target.value)} placeholder="Fecha" />
+              </th>
+              <th>
+                <input value={searchAgente} onChange={(e) => setSearchAgente(e.target.value)} placeholder="Agente" />
+              </th>
+            </tr>
+
+            {/* 🔹 HEADERS */}
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
@@ -137,6 +148,7 @@ function Clientes() {
                 ))}
               </tr>
             ))}
+
           </thead>
 
           <tbody>
@@ -156,6 +168,7 @@ function Clientes() {
               </tr>
             )}
           </tbody>
+
         </table>
 
       </div>
