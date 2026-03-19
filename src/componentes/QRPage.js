@@ -13,7 +13,7 @@ function QRPage() {
 
   const userId = localStorage.getItem("mfa_user");
 
-  // 🔥 FUNCIÓN PARA OBTENER QR SOLO SI NO EXISTE
+  // 🔥 GENERAR QR SOLO SI NO ESTÁ CONFIGURADO
   const getQR = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -26,7 +26,7 @@ function QRPage() {
 
       setQr(res.data.qrCodeUrl);
 
-      // 🔥 GUARDAR SOLO UNA VEZ
+      // Guardar QR temporalmente
       localStorage.setItem("qr", res.data.qrCodeUrl);
 
     } catch (err) {
@@ -41,18 +41,25 @@ function QRPage() {
       return;
     }
 
+    const mfaConfigured = localStorage.getItem("mfa_configured");
+
+    // 🚫 SI YA CONFIGURÓ MFA → NO MOSTRAR QR
+    if (mfaConfigured === "true") {
+      setQr(null);
+      return;
+    }
+
     const savedQR = localStorage.getItem("qr");
 
     if (savedQR) {
-      // ✅ USAR QR EXISTENTE
       setQr(savedQR);
     } else {
-      // 🔥 SOLO SI NO EXISTE → GENERAR
       getQR();
     }
 
   }, [userId, navigate]);
 
+  // 🔐 VERIFICAR CÓDIGO
   const verificarCodigo = async () => {
     setError("");
 
@@ -69,9 +76,12 @@ function QRPage() {
 
       if (res.data.access_token) {
         localStorage.setItem("token", res.data.access_token);
+
+        // 🔥 MARCAR MFA COMO CONFIGURADO
+        localStorage.setItem("mfa_configured", "true");
       }
 
-      // 🔥 LIMPIAR SOLO DESPUÉS DE LOGIN COMPLETO
+      // Limpiar datos temporales
       localStorage.removeItem("mfa_user");
       localStorage.removeItem("qr");
 
@@ -92,20 +102,21 @@ function QRPage() {
       <div className="container">
 
         <h2 className="qr-title">
-          {qr ? "Escanea el QR" : "Cargando QR..."}
+          {qr ? "Escanea el QR" : "Ingresa tu código"}
         </h2>
 
         <div className="qr-line"></div>
 
-        <div className="qr-container">
-          {qr && (
+        {/* 🔥 SOLO MUESTRA QR SI NO ESTÁ CONFIGURADO */}
+        {qr && (
+          <div className="qr-container">
             <img
               src={qr}
               alt="QR MFA"
               className="qr-img"
             />
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="qr-form">
           <input
