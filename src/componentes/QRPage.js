@@ -12,7 +12,28 @@ function QRPage() {
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("mfa_user");
-  const qrCodeUrl = localStorage.getItem("qr");
+
+  // 🔥 FUNCIÓN PARA OBTENER QR SOLO SI NO EXISTE
+  const getQR = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await api.get("/auth/mfa/generate", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setQr(res.data.qrCodeUrl);
+
+      // 🔥 GUARDAR SOLO UNA VEZ
+      localStorage.setItem("qr", res.data.qrCodeUrl);
+
+    } catch (err) {
+      console.error("Error obteniendo QR:", err);
+      setError("No se pudo generar el QR");
+    }
+  };
 
   useEffect(() => {
     if (!userId) {
@@ -20,12 +41,17 @@ function QRPage() {
       return;
     }
 
-    if (qrCodeUrl) {
-      setQr(qrCodeUrl);
+    const savedQR = localStorage.getItem("qr");
+
+    if (savedQR) {
+      // ✅ USAR QR EXISTENTE
+      setQr(savedQR);
     } else {
-      setQr(null);
+      // 🔥 SOLO SI NO EXISTE → GENERAR
+      getQR();
     }
-  }, [userId, qrCodeUrl, navigate]);
+
+  }, [userId, navigate]);
 
   const verificarCodigo = async () => {
     setError("");
@@ -45,6 +71,7 @@ function QRPage() {
         localStorage.setItem("token", res.data.access_token);
       }
 
+      // 🔥 LIMPIAR SOLO DESPUÉS DE LOGIN COMPLETO
       localStorage.removeItem("mfa_user");
       localStorage.removeItem("qr");
 
@@ -65,7 +92,7 @@ function QRPage() {
       <div className="container">
 
         <h2 className="qr-title">
-          {qr ? "Escanea el QR" : "Ingresa tu código de verificación"}
+          {qr ? "Escanea el QR" : "Cargando QR..."}
         </h2>
 
         <div className="qr-line"></div>
@@ -98,13 +125,13 @@ function QRPage() {
           >
             Verificar
           </button>
+
         </div>
 
         {error && <p className="qr-error">{error}</p>}
 
       </div>
 
-      {/* 🔥 LOGO CORRECTO */}
       <img 
         src={osnetLogo}
         alt="OSNET"

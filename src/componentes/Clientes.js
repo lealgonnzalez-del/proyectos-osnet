@@ -105,35 +105,23 @@ function Clientes() {
     <div className="containerTable">
       <div className="container2">
 
-        <h2>Tabla Clientes</h2>
+        <h2>Clientes</h2>
 
-        {/* 📊 TABLA COMPLETA */}
+        {/* 🔥 FILTROS FLOTANTES */}
+        <div className="filtros-container">
+          <div className="searchBox">
+            <input value={searchId} onChange={(e) => setSearchId(e.target.value)} placeholder="ID" />
+            <input value={searchCliente} onChange={(e) => setSearchCliente(e.target.value)} placeholder="Cliente" />
+            <input value={searchTipo} onChange={(e) => setSearchTipo(e.target.value)} placeholder="Tipo" />
+            <input value={searchMonto} onChange={(e) => setSearchMonto(e.target.value)} placeholder="Monto mínimo" />
+            <input value={searchFecha} onChange={(e) => setSearchFecha(e.target.value)} placeholder="Fecha" />
+            <input value={searchAgente} onChange={(e) => setSearchAgente(e.target.value)} placeholder="Agente" />
+          </div>
+        </div>
+
+        {/* 📊 TABLA */}
         <table className="table">
           <thead>
-
-            {/* 🔥 FILA DE FILTROS */}
-            <tr className="filter-row">
-              <th>
-                <input value={searchId} onChange={(e) => setSearchId(e.target.value)} placeholder="ID" />
-              </th>
-              <th>
-                <input value={searchCliente} onChange={(e) => setSearchCliente(e.target.value)} placeholder="Cliente" />
-              </th>
-              <th>
-                <input value={searchTipo} onChange={(e) => setSearchTipo(e.target.value)} placeholder="Tipo" />
-              </th>
-              <th>
-                <input value={searchMonto} onChange={(e) => setSearchMonto(e.target.value)} placeholder="Monto mínimo" />
-              </th>
-              <th>
-                <input value={searchFecha} onChange={(e) => setSearchFecha(e.target.value)} placeholder="Fecha" />
-              </th>
-              <th>
-                <input value={searchAgente} onChange={(e) => setSearchAgente(e.target.value)} placeholder="Agente" />
-              </th>
-            </tr>
-
-            {/* 🔹 HEADERS */}
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
@@ -148,7 +136,6 @@ function Clientes() {
                 ))}
               </tr>
             ))}
-
           </thead>
 
           <tbody>
@@ -173,6 +160,7 @@ function Clientes() {
 
       </div>
     </div>
+    
   );
 }
 
