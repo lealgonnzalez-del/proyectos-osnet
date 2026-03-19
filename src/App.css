@@ -164,8 +164,8 @@ body{
 /* ===== FILTROS ALINEADOS PERFECTO ===== */
 
 .searchBox{
-  display:grid;
-  grid-template-columns: repeat(6, 1fr);
+  display:flex;
+  gap: 6px;
   width:100%;
   max-width:900px;
   margin:0 auto 5px auto;
@@ -175,7 +175,6 @@ body{
 /* INPUTS */
 .searchBox input{
   width:100%;
-  padding:10px;
   border:1px solid #ccc;
   border-radius: 6px;
   background:#f5f7fa;
@@ -324,6 +323,7 @@ body{
 .tableContainer {
   width: 100%;
   overflow-x: auto; /* 👈 permite scroll en vez de romper el diseño */
+
 }
 
 table {
