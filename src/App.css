@@ -310,3 +310,78 @@ body{
     transform: scale(1);
   }
 }
+
+
+
+/*qr*/
+
+/* ===== QR PAGE ===== */
+
+.qr-title{
+  color:white;
+  margin-bottom:20px;
+  font-size:22px;
+}
+
+/* CONTENEDOR QR */
+.qr-container{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+/* IMAGEN QR */
+.qr-img{
+  width:250px;
+  border-radius:15px;
+  background:white;
+  padding:12px;
+
+  box-shadow:0px 10px 25px rgba(0,0,0,0.3);
+
+  transition:0.3s;
+}
+
+/* EFECTO HOVER */
+.qr-img:hover{
+  transform:scale(1.05);
+}
+
+/* INPUT */
+.qr-input{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:2px solid #ddd;
+  margin-bottom:15px;
+  font-size:16px;
+}
+
+/* BOTÓN */
+.qr-button{
+  background:#00c9a7;
+  border:none;
+  color:white;
+  padding:10px 25px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.qr-button:hover{
+  background:#00a98c;
+}
+
+/* MENSAJES ERROR */
+.qr-error{
+  color:#ff4d4d;
+  margin-bottom:10px;
+  font-weight:bold;
+}
+
+/* ERROR GENERAL */
+.qr-error-container{
+  text-align:center;
+  margin-top:50px;
+}
