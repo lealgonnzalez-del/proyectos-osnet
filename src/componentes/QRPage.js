@@ -13,7 +13,6 @@ function QRPage() {
 
   const userId = localStorage.getItem("mfa_user");
 
-  // 🔥 GENERAR QR SOLO SI NO ESTÁ CONFIGURADO
   const getQR = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -24,10 +23,10 @@ function QRPage() {
         },
       });
 
-      setQr(res.data.qrCodeUrl);
-
-      // Guardar QR temporalmente
-      localStorage.setItem("qr", res.data.qrCodeUrl);
+      if (res.data.qrCodeUrl) {
+        setQr(res.data.qrCodeUrl);
+        localStorage.setItem("qr", res.data.qrCodeUrl);
+      }
 
     } catch (err) {
       console.error("Error obteniendo QR:", err);
@@ -41,10 +40,10 @@ function QRPage() {
       return;
     }
 
-    const mfaConfigured = localStorage.getItem("mfa_configured");
+    const configured = localStorage.getItem("mfa_configured");
 
-    // 🚫 SI YA CONFIGURÓ MFA → NO MOSTRAR QR
-    if (mfaConfigured === "true") {
+    // 🔴 SI YA CONFIGURÓ → NO MOSTRAR QR
+    if (configured === "true") {
       setQr(null);
       return;
     }
@@ -59,7 +58,6 @@ function QRPage() {
 
   }, [userId, navigate]);
 
-  // 🔐 VERIFICAR CÓDIGO
   const verificarCodigo = async () => {
     setError("");
 
@@ -77,11 +75,11 @@ function QRPage() {
       if (res.data.access_token) {
         localStorage.setItem("token", res.data.access_token);
 
-        // 🔥 MARCAR MFA COMO CONFIGURADO
+        // 🔥 MARCAR COMO CONFIGURADO
         localStorage.setItem("mfa_configured", "true");
       }
 
-      // Limpiar datos temporales
+      // 🧹 LIMPIEZA (NO BORRAR mfa_configured)
       localStorage.removeItem("mfa_user");
       localStorage.removeItem("qr");
 
@@ -107,7 +105,6 @@ function QRPage() {
 
         <div className="qr-line"></div>
 
-        {/* 🔥 SOLO MUESTRA QR SI NO ESTÁ CONFIGURADO */}
         {qr && (
           <div className="qr-container">
             <img
@@ -136,7 +133,6 @@ function QRPage() {
           >
             Verificar
           </button>
-
         </div>
 
         {error && <p className="qr-error">{error}</p>}

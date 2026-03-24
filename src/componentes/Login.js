@@ -15,7 +15,7 @@ function Login() {
   const iniciarSesion = async () => {
     console.log("CLICK FUNCIONA");
 
-    // 🔥 LIMPIAR DATOS MFA ANTERIORES
+    // 🔥 LIMPIAR SOLO LO NECESARIO
     localStorage.removeItem("mfa_user");
     localStorage.removeItem("qr");
 
@@ -35,15 +35,22 @@ function Login() {
       // 🔐 CASO MFA
       if (res.data.mfaRequired) {
 
-        // ✅ TOKEN TEMPORAL
+        // TOKEN TEMPORAL
         if (res.data.access_token) {
           localStorage.setItem("token", res.data.access_token);
         }
 
-        // ✅ USER ID
+        // USER ID
         localStorage.setItem("mfa_user", res.data.userId);
 
-        // 🔥 GUARDAR QR (SOLUCIÓN CLAVE)
+        // 🔥 CLAVE: SABER SI YA CONFIGURÓ
+        if (res.data.firstTime === false) {
+          localStorage.setItem("mfa_configured", "true");
+        } else {
+          localStorage.removeItem("mfa_configured");
+        }
+
+        // GUARDAR QR SOLO SI VIENE
         if (res.data.qrCodeUrl) {
           localStorage.setItem("qr", res.data.qrCodeUrl);
         }
