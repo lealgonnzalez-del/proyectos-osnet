@@ -1,121 +1,51 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../App.css";
-import api from "../services/api";
-import osnetLogo from "../imagenes/osnet.png";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../App.css';
 
 function Login() {
-
-  const [usuario, setUsuario] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [mostrarPassword, setMostrarPassword] = useState(false);
-
   const navigate = useNavigate();
 
-  const iniciarSesion = async () => {
-    console.log("CLICK FUNCIONA");
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-    // 🔥 LIMPIAR SOLO LO NECESARIO
-    localStorage.removeItem("mfa_user");
-    localStorage.removeItem("qr");
+    const res = await fetch('http://localhost:3002/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
 
-    if (usuario.trim() === "" || password.trim() === "") {
-      alert("Ingrese usuario y contraseña");
+    const data = await res.json();
+
+    if (data.mfaRequired) {
+      navigate('/qr', { state: data });
       return;
     }
 
-    try {
-      const res = await api.post("/auth/login", {
-        username: usuario,
-        password: password,
-      });
-
-      console.log("RESPUESTA LOGIN:", res.data);
-
-      // 🔐 CASO MFA
-      if (res.data.mfaRequired) {
-
-        // TOKEN TEMPORAL
-        if (res.data.access_token) {
-          localStorage.setItem("token", res.data.access_token);
-        }
-
-        // USER ID
-        localStorage.setItem("mfa_user", res.data.userId);
-
-        // 🔥 CLAVE: SABER SI YA CONFIGURÓ
-        if (res.data.firstTime === false) {
-          localStorage.setItem("mfa_configured", "true");
-        } else {
-          localStorage.removeItem("mfa_configured");
-        }
-
-        // GUARDAR QR SOLO SI VIENE
-        if (res.data.qrCodeUrl) {
-          localStorage.setItem("qr", res.data.qrCodeUrl);
-        }
-
-        navigate("/qr");
-        return;
-      }
-
-      // 🟢 LOGIN NORMAL
-      if (res.data.access_token) {
-
-        localStorage.setItem("token", res.data.access_token);
-
-        if (res.data.user) {
-          localStorage.setItem("user", JSON.stringify(res.data.user));
-        }
-
-        alert("Login exitoso");
-        navigate("/clientes");
-      }
-
-    } catch (error) {
-      console.error("ERROR COMPLETO:", error);
-
-      if (error.response) {
-        if (error.response.status === 401) {
-          alert("Usuario o contraseña incorrectos");
-        } else if (error.response.status === 500) {
-          alert("Error interno del servidor");
-        } else {
-          alert("Error: " + (error.response.data?.message || "Error desconocido"));
-        }
-
-      } else if (error.request) {
-        alert("No hay conexión con el backend");
-      } else {
-        alert("Error inesperado");
-      }
+    if (data.access_token) {
+      localStorage.setItem('token', data.access_token);
+      navigate('/clientes');
     }
   };
 
-  const limpiar = () => {
-    setUsuario("");
-    setPassword("");
-  };
-
   return (
-    <>
-      <div className="container">
+    <div className="container">
+      <h2 className="title">Login</h2>
 
-        <h1 className="title">Inicio de Sesión</h1>
-
+      <form onSubmit={handleLogin}>
         <input
           className="input"
-          type="text"
           placeholder="Usuario"
-          value={usuario}
-          onChange={(e) => setUsuario(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <div className="passwordContainer">
-
           <input
             className="input"
-            type={mostrarPassword ? "text" : "password"}
+            type={mostrarPassword ? 'text' : 'password'}
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -124,33 +54,27 @@ function Login() {
           <span
             className="ojo"
             onClick={() => setMostrarPassword(!mostrarPassword)}
-            style={{ cursor: "pointer" }}
           >
             👁
           </span>
-
         </div>
 
         <div className="buttons">
+          <button className="button">Ingresar</button>
 
-          <button className="button" onClick={iniciarSesion}>
-            Iniciar Sesión
-          </button>
-
-          <button className="clearButton" onClick={limpiar}>
+          <button
+            type="button"
+            className="clearButton"
+            onClick={() => {
+              setUsername('');
+              setPassword('');
+            }}
+          >
             Limpiar
           </button>
-
         </div>
-
-      </div>
-
-      <img 
-        src={osnetLogo}
-        alt="OSNET" 
-        className="osnet"
-      />
-    </>
+      </form>
+    </div>
   );
 }
 

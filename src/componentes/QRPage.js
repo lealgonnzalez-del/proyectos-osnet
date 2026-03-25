@@ -1,150 +1,54 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../services/api";
-import "../App.css";
-import osnetLogo from "../imagenes/osnet.png";
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import '../App.css';
 
 function QRPage() {
-  const [qr, setQr] = useState(null);
-  const [codigo, setCodigo] = useState("");
-  const [error, setError] = useState("");
-
+  const location = useLocation();
   const navigate = useNavigate();
 
-  const userId = localStorage.getItem("mfa_user");
-
-  const getQR = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const res = await api.get("/auth/mfa/generate", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.data.qrCodeUrl) {
-        setQr(res.data.qrCodeUrl);
-        localStorage.setItem("qr", res.data.qrCodeUrl);
-      }
-
-    } catch (err) {
-      console.error("Error obteniendo QR:", err);
-      setError("No se pudo generar el QR");
-    }
-  };
-
-  useEffect(() => {
-    if (!userId) {
-      navigate("/");
-      return;
-    }
-
-    const configured = localStorage.getItem("mfa_configured");
-
-    // 🔴 SI YA CONFIGURÓ → NO MOSTRAR QR
-    if (configured === "true") {
-      setQr(null);
-      return;
-    }
-
-    const savedQR = localStorage.getItem("qr");
-
-    if (savedQR) {
-      setQr(savedQR);
-    } else {
-      getQR();
-    }
-
-  }, [userId, navigate]);
+  const { userId, qrCodeUrl, firstTime } = location.state || {};
+  const [codigo, setCodigo] = useState('');
 
   const verificarCodigo = async () => {
-    setError("");
+    const res = await fetch('http://localhost:3002/auth/mfa/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, mfaCode: codigo }),
+    });
 
-    if (codigo.length !== 6) {
-      setError("Ingrese código de 6 dígitos");
-      return;
-    }
+    const data = await res.json();
 
-    try {
-      const res = await api.post("/auth/mfa/verify", {
-        userId,
-        mfaCode: codigo,
-      });
-
-      if (res.data.access_token) {
-        localStorage.setItem("token", res.data.access_token);
-
-        // 🔥 MARCAR COMO CONFIGURADO
-        localStorage.setItem("mfa_configured", "true");
-      }
-
-      // 🧹 LIMPIEZA (NO BORRAR mfa_configured)
-      localStorage.removeItem("mfa_user");
-      localStorage.removeItem("qr");
-
-      alert("Login completo");
-      navigate("/clientes");
-
-    } catch (error) {
-      if (error.response?.status === 401) {
-        setError("Código incorrecto");
-      } else {
-        setError("Error verificando MFA");
-      }
+    if (data.access_token) {
+      localStorage.setItem('token', data.access_token);
+      navigate('/clientes');
+    } else {
+      alert('Código incorrecto');
     }
   };
 
   return (
-    <>
-      <div className="container">
+    <div className="container">
+      <h2 className="qr-title">Verificación MFA</h2>
 
-        <h2 className="qr-title">
-          {qr ? "Escanea el QR" : "Ingresa tu código"}
-        </h2>
-
-        <div className="qr-line"></div>
-
-        {qr && (
-          <div className="qr-container">
-            <img
-              src={qr}
-              alt="QR MFA"
-              className="qr-img"
-            />
-          </div>
-        )}
-
-        <div className="qr-form">
-          <input
-            type="text"
-            placeholder="Código de 6 dígitos"
-            maxLength={6}
-            value={codigo}
-            className="qr-input"
-            onChange={(e) =>
-              setCodigo(e.target.value.replace(/\D/g, ""))
-            }
-          />
-
-          <button
-            className="qr-button"
-            onClick={verificarCodigo}
-          >
-            Verificar
-          </button>
+      {firstTime && qrCodeUrl && (
+        <div className="qr-container">
+          <img src={qrCodeUrl} alt="QR" className="qr-img" />
         </div>
+      )}
 
-        {error && <p className="qr-error">{error}</p>}
+      <div className="qr-form">
+        <input
+          className="qr-input"
+          placeholder="Código"
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value)}
+        />
 
+        <button className="qr-button" onClick={verificarCodigo}>
+          Verificar
+        </button>
       </div>
-
-      <img 
-        src={osnetLogo}
-        alt="OSNET"
-        className="osnet"
-      />
-    </>
+    </div>
   );
 }
 

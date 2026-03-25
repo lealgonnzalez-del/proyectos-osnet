@@ -45,7 +45,7 @@ function Clientes() {
         if (searchFecha) params.append("date_from", searchFecha);
         if (searchAgente) params.append("agent", searchAgente);
 
-        const url = `http://localhost:3000/records?${params.toString()}`;
+        const url = `http://localhost:3002/records?${params.toString()}`;
 
         const res = await fetch(url, {
           headers: {
@@ -76,7 +76,16 @@ function Clientes() {
 
     obtenerDatos();
 
-  }, [searchId, searchCliente, searchTipo, searchMonto, searchFecha, searchAgente, token, navigate]);
+  }, [
+    searchId,
+    searchCliente,
+    searchTipo,
+    searchMonto,
+    searchFecha,
+    searchAgente,
+    token,
+    navigate
+  ]);
 
   // 📊 COLUMNAS
   const columns = useMemo(() => [
@@ -87,7 +96,10 @@ function Clientes() {
     {
       header: "Fecha",
       accessorKey: "date",
-      cell: info => new Date(info.getValue()).toLocaleDateString()
+      cell: info => {
+        const value = info.getValue();
+        return value ? new Date(value).toLocaleDateString() : "";
+      }
     },
     { header: "Agente", accessorKey: "agent" }
   ], []);
@@ -105,9 +117,9 @@ function Clientes() {
     <div className="containerTable">
       <div className="container2">
 
-        <h2>Clientes</h2>
+        <h2 className="title">Clientes</h2>
 
-        {/* 🔥 FILTROS FLOTANTES */}
+        {/* 🔥 FILTROS */}
         <div className="filtros-container">
           <div className="searchBox">
             <input value={searchId} onChange={(e) => setSearchId(e.target.value)} placeholder="ID" />
@@ -120,47 +132,48 @@ function Clientes() {
         </div>
 
         {/* 📊 TABLA */}
-        <table className="table">
-          <thead>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {{ asc: " 🔼", desc: " 🔽" }[header.column.getIsSorted()] ?? null}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
+        <div className="table-container">
+          <table className="table">
 
-          <tbody>
-            {table.getRowModel().rows.length > 0 ? (
-              table.getRowModel().rows.map(row => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map(cell => (
-                    <td key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
+            <thead>
+              {table.getHeaderGroups().map(headerGroup => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map(header => (
+                    <th
+                      key={header.id}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{ asc: " 🔼", desc: " 🔽" }[header.column.getIsSorted()] ?? null}
+                    </th>
                   ))}
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6">No hay datos</td>
-              </tr>
-            )}
-          </tbody>
+              ))}
+            </thead>
 
-        </table>
+            <tbody>
+              {table.getRowModel().rows.length > 0 ? (
+                table.getRowModel().rows.map(row => (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map(cell => (
+                      <td key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6">No hay datos</td>
+                </tr>
+              )}
+            </tbody>
+
+          </table>
+        </div>
 
       </div>
     </div>
-    
   );
 }
 
