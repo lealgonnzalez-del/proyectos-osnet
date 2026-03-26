@@ -114,55 +114,70 @@ body {
 /* ===================== */
 /* TABLA DASHBOARD */
 /* ===================== */
+/* ========================= */
+/* CONTENEDOR PRINCIPAL */
+/* ========================= */
 .containerTable {
   width: 100%;
-  padding: 40px 20px;
+  padding: 30px 20px;
   box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  background: #f5f7fa;
 }
 
 .container2 {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1300px;
   margin: auto;
-
-  background: rgba(255,255,255,0.95);
+  background: #ffffff;
   border-radius: 15px;
-  padding: 25px;
-
-  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* ===================== */
+/* ========================= */
+/* TÍTULOS */
+/* ========================= */
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #0a2540;
+}
+
+
+
+/* ========================= */
 /* FILTROS */
-/* ===================== */
+/* ========================= */
 .filtros-container {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .searchBox {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px;
 }
 
 .searchBox input {
-  padding: 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  transition: 0.2s;
+  font-size: 14px;
+  transition: all 0.25s ease;
 }
 
 .searchBox input:focus {
   outline: none;
   border-color: #4facfe;
-  box-shadow: 0 0 5px rgba(79,172,254,0.5);
+  box-shadow: 0 0 8px rgba(79,172,254,0.4);
 }
 
-/* ===================== */
-/* TABLA */
-/* ===================== */
+/* ========================= */
+/* TABLA DE DATOS */
+/* ========================= */
 .table-container {
-  margin-top: 10px;
   overflow-x: auto;
 }
 
@@ -170,48 +185,71 @@ body {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-
-  background: white;
+  font-size: 14px;
+  background: #fff;
   border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
 .table th {
-  background: #0a2540; /* azul oscuro */
-  color: white;
-  padding: 12px;
+  background: #0a2540;
+  color: #fff;
+  padding: 12px 15px;
   text-align: left;
   font-weight: 600;
   cursor: pointer;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .table td {
-  padding: 12px;
+  padding: 12px 15px;
   border-bottom: 1px solid #eee;
+  color: #333;
 }
 
-/* filas alternas */
+/* Filas alternas */
 .table tr:nth-child(even) {
-  background: #f9fbfd;
+  background: #f9f9f9;
 }
 
-/* hover */
+/* Hover */
 .table tr:hover {
   background: #e6f2ff;
 }
 
-/* ===================== */
-/* MENSAJE SIN DATOS */
-/* ===================== */
+/* Mensaje sin datos */
 .table td[colspan] {
   text-align: center;
   padding: 20px;
   color: #777;
 }
 
-/* ===================== */
-/* LOGO */
-/* ===================== */
+/* ========================= */
+/* GRÁFICOS */
+/* ========================= */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 25px;
+}
+.chart-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.chart-card.full-width {
+  grid-column: 1 / -1;
+}
+.chart-card h3 {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 20px;
+}
 .logoOsnet {
   position: fixed;
   bottom: 20px;

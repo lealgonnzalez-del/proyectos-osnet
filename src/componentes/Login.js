@@ -12,37 +12,50 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const res = await fetch('http://localhost:3002/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const res = await fetch('http://localhost:3002/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data.mfaRequired) {
-      navigate('/qr', { state: data });
-      return;
-    }
+      if (data.mfaRequired) {
+        // Redirigimos a la página de QR/MFA pasando el estado necesario
+        navigate('/qr', { 
+          state: { 
+            userId: data.userId, 
+            qrCodeUrl: data.qrCodeUrl, // Se mostrará solo si la API lo envía
+            firstTime: !!data.qrCodeUrl 
+          } 
+        });
+        return;
+      }
 
-    if (data.access_token) {
-      localStorage.setItem('token', data.access_token);
-      navigate('/clientes');
+      if (data.access_token) {
+        localStorage.setItem('token', data.access_token);
+        navigate('/clientes');
+      } else {
+        alert(data.message || 'Credenciales inválidas');
+      }
+    } catch (error) {
+      console.error("Error en login:", error);
+      alert("Error al conectar con el servidor");
     }
   };
 
   return (
     <div className="container">
       <h2 className="title">Inicio de Secion</h2>
-
       <form onSubmit={handleLogin}>
         <input
           className="input"
           placeholder="Usuario"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          required
         />
-
         <div className="passwordContainer">
           <input
             className="input"
@@ -50,26 +63,18 @@ function Login() {
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-
-          <span
-            className="ojo"
-            onClick={() => setMostrarPassword(!mostrarPassword)}
-          >
-            👁
+          <span className="ojo" onClick={() => setMostrarPassword(!mostrarPassword)}>
+            {mostrarPassword ? '🙈' : '👁'}
           </span>
         </div>
-
         <div className="buttons">
-          <button className="button">Ingresar</button>
-
+          <button type="submit" className="button">Ingresar</button>
           <button
             type="button"
             className="clearButton"
-            onClick={() => {
-              setUsername('');
-              setPassword('');
-            }}
+            onClick={() => { setUsername(''); setPassword(''); }}
           >
             Limpiar
           </button>

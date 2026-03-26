@@ -1,95 +1,68 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from "../services/api";
 
 function MfaPage() {
   const [codigo, setCodigo] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔐 Obtener datos desde state o localStorage (fallback)
-  const userId =
-    location.state?.userId || localStorage.getItem("mfa_user");
+  // Intentar obtener datos del state o del almacenamiento local
+  const userId = location.state?.userId || localStorage.getItem("temp_userId");
+  const qrCodeUrl = location.state?.qrCodeUrl || localStorage.getItem("temp_qrCode");
+  const isFirstTime = location.state?.firstTime || !!qrCodeUrl;
 
-  const qrCodeUrl =
-    location.state?.qrCodeUrl || localStorage.getItem("mfa_qr");
-
-  const firstTime =
-    location.state?.firstTime ??
-    localStorage.getItem("mfa_firstTime") === "true";
-
-  // 🚫 Protección: si no hay userId → volver a login
   useEffect(() => {
     if (!userId) {
-      alert("Sesión inválida, inicia sesión nuevamente");
       navigate("/login");
+    } else {
+      // Guardar temporalmente por si refresca la página
+      localStorage.setItem("temp_userId", userId);
+      if (qrCodeUrl) localStorage.setItem("temp_qrCode", qrCodeUrl);
     }
-  }, [userId, navigate]);
+  }, [userId, navigate, qrCodeUrl]);
 
   const verificarCodigo = async () => {
-    if (codigo.trim() === "") {
-      alert("Ingrese el código MFA");
-      return;
-    }
-
     try {
-      const res = await api.post("/auth/mfa/verify", {
-        userId: userId,
-        mfaCode: codigo,
+      const res = await fetch('http://localhost:3002/auth/mfa/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, mfaCode: codigo }),
       });
 
-      console.log("MFA OK:", res.data);
+      const data = await res.json();
 
-      // 🔐 Guardar token SOLO después del MFA
-      localStorage.setItem("token", res.data.access_token);
-
-      // 🧹 Limpiar datos temporales
-      localStorage.removeItem("mfa_user");
-      localStorage.removeItem("mfa_qr");
-      localStorage.removeItem("mfa_firstTime");
-
-      alert("Autenticación completa");
-
-      // 🚀 Redirigir
-      navigate("/clientes");
-
-    } catch (error) {
-      console.error("Error MFA:", error);
-
-      if (error.response?.status === 401) {
-        alert("Código incorrecto");
+      if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        // Limpiar temporales
+        localStorage.removeItem("temp_userId");
+        localStorage.removeItem("temp_qrCode");
+        navigate("/clientes");
       } else {
-        alert("Error verificando MFA");
+        alert("Código inválido");
       }
+    } catch (error) {
+      alert("Error al verificar");
     }
   };
 
   return (
     <div className="container">
       <h2>Verificación MFA</h2>
-
-      {/* 🔥 Mostrar QR solo si es primer login */}
-      {firstTime && qrCodeUrl ? (
-        <div style={{ marginBottom: "20px" }}>
-          <p>Escanea este código con Microsoft Authenticator</p>
-          <img src={qrCodeUrl} alt="QR MFA" />
+      {isFirstTime && qrCodeUrl && (
+        <div style={{ textAlign: 'center', margin: '20px 0' }}>
+          <p>Vincula tu cuenta escaneando este QR:</p>
+          <img src={qrCodeUrl} alt="QR" style={{ border: '5px solid white' }} />
         </div>
-      ) : (
-        <p>Ingresa el código de tu aplicación autenticadora</p>
       )}
-
       <input
         className="input"
         type="text"
-        placeholder="Código de 6 dígitos"
+        placeholder="Ingrese código de 6 dígitos"
         value={codigo}
         onChange={(e) => setCodigo(e.target.value)}
       />
-
-      <br /><br />
-
-      <button className="button" onClick={verificarCodigo}>
-        Verificar
+      <button className="button" onClick={verificarCodigo} style={{ marginTop: '20px' }}>
+        Confirmar
       </button>
     </div>
   );
