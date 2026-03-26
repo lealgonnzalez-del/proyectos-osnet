@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
+import logo from '../imagenes/osnet.png';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -32,7 +33,7 @@ function Login() {
 
   return (
     <div className="container">
-      <h2 className="title">Login</h2>
+      <h2 className="title">Inicio de Secion</h2>
 
       <form onSubmit={handleLogin}>
         <input
@@ -74,6 +75,7 @@ function Login() {
           </button>
         </div>
       </form>
+      <img src={logo} alt="Logo" className="logoOsnet" />
     </div>
   );
 }

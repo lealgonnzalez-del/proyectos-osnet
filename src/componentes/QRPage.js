@@ -28,7 +28,7 @@ function QRPage() {
 
   return (
     <div className="container">
-      <h2 className="qr-title">Verificación MFA</h2>
+      <h2 className="qr-title">Ingresar Codigo</h2>
 
       {firstTime && qrCodeUrl && (
         <div className="qr-container">

@@ -1,163 +1,225 @@
-body{
-  margin:0;
+/* ===================== */
+/* GLOBAL */
+/* ===================== */
+body {
+  margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   background: linear-gradient(135deg,#39b7e3,#00c9d8);
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  overflow-y:auto;
+  min-height: 100vh;
+
+  display: block; /* importante para vista tipo dashboard */
 }
 
-.container{
-  width:100%;
-  max-width:350px;
-  margin:auto;
-  text-align:center;
-}
-
-.title{
-  color:white;
-  font-size:28px;
-  margin-bottom:30px;
-}
-
-.input{
-  width:100%;
-  padding:12px;
-  margin-bottom:20px;
-  border-radius:8px;
-  border:2px solid #ddd;
-  font-size:16px;
-  box-sizing:border-box;
-}
-
-.passwordContainer{
-  position:relative;
-}
-
-.ojo{
-  position:absolute;
-  right:12px;
-  top:50%;
-  transform:translateY(-50%);
-  cursor:pointer;
-}
-
-.buttons{
-  display:flex;
-  gap:20px;
-  justify-content:center;
-}
-
-.button{
-  background:#4facfe;
-  border:none;
-  color:white;
-  padding:10px 25px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-.clearButton{
-  background:#777;
-  border:none;
-  color:white;
-  padding:10px 25px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-.qr-title{
-  color:white;
-}
-
-.qr-container{
-  margin:20px;
-}
-
-.qr-img{
-  width:250px;
-  background:white;
-  padding:10px;
-  border-radius:10px;
-}
-
-.qr-form{
-  display:flex;
-  gap:10px;
-  justify-content:center;
-}
-
-.qr-input{
-  padding:10px;
-  border-radius:8px;
-  border:2px solid #2f8df5;
-}
-
-.qr-button{
-  background:#2f8df5;
-  border:none;
-  color:white;
-  padding:10px;
-  border-radius:8px;
-  cursor:pointer;
-}
-/* CONTENEDOR TABLA */
-.containerTable {
+/* ===================== */
+/* LOGIN */
+/* ===================== */
+.container {
   width: 100%;
+  max-width: 350px;
+  margin: 80px auto;
+  text-align: center;
+}
+
+.title {
+  color: #0a2540;
+  font-size: 26px;
+  margin-bottom: 25px;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.passwordContainer {
+  position: relative;
+}
+
+.ojo {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.buttons {
   display: flex;
+  gap: 20px;
   justify-content: center;
 }
 
-.container2 {
-  width: 90%;
-  max-width: 1200px;
+.button {
+  background: #4facfe;
+  border: none;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
+.clearButton {
+  background: #777;
+  border: none;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ===================== */
+/* QR */
+/* ===================== */
+.qr-title {
+  color: white;
+}
+
+.qr-container {
+  margin: 20px;
+}
+
+.qr-img {
+  width: 250px;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.qr-form {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.qr-input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #2f8df5;
+}
+
+.qr-button {
+  background: #2f8df5;
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ===================== */
+/* TABLA DASHBOARD */
+/* ===================== */
+.containerTable {
+  width: 100%;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.container2 {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+
+  background: rgba(255,255,255,0.95);
+  border-radius: 15px;
+  padding: 25px;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+/* ===================== */
 /* FILTROS */
+/* ===================== */
 .filtros-container {
   margin-bottom: 20px;
 }
 
 .searchBox {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
 }
 
 .searchBox input {
-  padding: 8px;
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 8px;
   border: 1px solid #ccc;
+  transition: 0.2s;
 }
 
+.searchBox input:focus {
+  outline: none;
+  border-color: #4facfe;
+  box-shadow: 0 0 5px rgba(79,172,254,0.5);
+}
+
+/* ===================== */
 /* TABLA */
+/* ===================== */
 .table-container {
+  margin-top: 10px;
   overflow-x: auto;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
+
   background: white;
   border-radius: 10px;
   overflow: hidden;
 }
 
 .table th {
-  background: #4facfe;
+  background: #0a2540; /* azul oscuro */
   color: white;
-  padding: 10px;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .table td {
-  padding: 10px;
+  padding: 12px;
   border-bottom: 1px solid #eee;
 }
 
+/* filas alternas */
+.table tr:nth-child(even) {
+  background: #f9fbfd;
+}
+
+/* hover */
 .table tr:hover {
-  background: #f5f5f5;
+  background: #e6f2ff;
+}
+
+/* ===================== */
+/* MENSAJE SIN DATOS */
+/* ===================== */
+.table td[colspan] {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+}
+
+/* ===================== */
+/* LOGO */
+/* ===================== */
+.logoOsnet {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 120px;
+
+  filter: brightness(0.8) contrast(1.2);
+
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
