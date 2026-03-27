@@ -21,18 +21,30 @@ function Login() {
 
       const data = await res.json();
 
-      if (data.mfaRequired) {
-        // Redirigimos a la página de QR/MFA pasando el estado necesario
-        navigate('/qr', { 
+      // CASO 1: Es la primera vez (Requiere generar QR)
+      if (data.tempToken) {
+        const qrRes = await fetch('http://localhost:3002/auth/mfa/generate', {
+          headers: { Authorization: `Bearer ${data.tempToken}` }
+        });
+        const qrData = await qrRes.json();
+
+        navigate('/mfa', { 
           state: { 
             userId: data.userId, 
-            qrCodeUrl: data.qrCodeUrl, // Se mostrará solo si la API lo envía
-            firstTime: !!data.qrCodeUrl 
+            qrCodeUrl: qrData.qrCodeUrl, 
+            isFirstTime: true 
           } 
         });
         return;
       }
 
+      // CASO 2: Ya está vinculado (MfaPage unificada)
+      if (data.mfaRequired) {
+        navigate('/mfa', { state: { userId: data.userId, isFirstTime: false } });
+        return;
+      }
+
+      // CASO 3: Login directo
       if (data.access_token) {
         localStorage.setItem('token', data.access_token);
         navigate('/clientes');
@@ -46,41 +58,45 @@ function Login() {
   };
 
   return (
-    <div className="container">
-      <h2 className="title">Inicio de Secion</h2>
-      <form onSubmit={handleLogin}>
+    <div className="container-auth">
+      <h2 className="auth-title">Inicio de Sesión</h2>
+      
+      <form onSubmit={handleLogin} style={{ textAlign: 'center' }}>
         <input
-          className="input"
+          className="input-osnet"
           placeholder="Usuario"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-        <div className="passwordContainer">
+        
+        <div className="password-wrapper">
           <input
-            className="input"
+            className="input-osnet"
             type={mostrarPassword ? 'text' : 'password'}
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <span className="ojo" onClick={() => setMostrarPassword(!mostrarPassword)}>
+          <span className="eye-icon" onClick={() => setMostrarPassword(!mostrarPassword)}>
             {mostrarPassword ? '🙈' : '👁'}
           </span>
         </div>
-        <div className="buttons">
-          <button type="submit" className="button">Ingresar</button>
+
+        <div className="auth-buttons">
+          <button type="submit" className="btn-osnet btn-primary-osnet">Iniciar Sesión</button>
           <button
             type="button"
-            className="clearButton"
+            className="btn-osnet btn-secondary-osnet"
             onClick={() => { setUsername(''); setPassword(''); }}
           >
             Limpiar
           </button>
         </div>
       </form>
-      <img src={logo} alt="Logo" className="logoOsnet" />
+      
+      <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" />
     </div>
   );
 }

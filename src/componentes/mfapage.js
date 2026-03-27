@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import "../App.css";
+import logo from '../imagenes/osnet.png';
 
 function MfaPage() {
   const [codigo, setCodigo] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Intentar obtener datos del state o del almacenamiento local
-  const userId = location.state?.userId || localStorage.getItem("temp_userId");
-  const qrCodeUrl = location.state?.qrCodeUrl || localStorage.getItem("temp_qrCode");
-  const isFirstTime = location.state?.firstTime || !!qrCodeUrl;
+  const { userId, qrCodeUrl, isFirstTime } = location.state || {};
 
   useEffect(() => {
     if (!userId) {
-      navigate("/login");
-    } else {
-      // Guardar temporalmente por si refresca la página
-      localStorage.setItem("temp_userId", userId);
-      if (qrCodeUrl) localStorage.setItem("temp_qrCode", qrCodeUrl);
+      navigate("/");
     }
-  }, [userId, navigate, qrCodeUrl]);
+  }, [userId, navigate]);
 
   const verificarCodigo = async () => {
+    if (codigo.length < 6) {
+      alert("Ingrese el código de 6 dígitos");
+      return;
+    }
+
     try {
       const res = await fetch('http://localhost:3002/auth/mfa/verify', {
         method: 'POST',
@@ -31,39 +31,71 @@ function MfaPage() {
 
       const data = await res.json();
 
-      if (data.access_token) {
+      if (res.ok && data.access_token) {
         localStorage.setItem("token", data.access_token);
-        // Limpiar temporales
-        localStorage.removeItem("temp_userId");
-        localStorage.removeItem("temp_qrCode");
-        navigate("/clientes");
+        navigate("/clientes"); // Acceso concedido a las gráficas unificadas
       } else {
-        alert("Código inválido");
+        alert(data.message || "Código incorrecto");
       }
     } catch (error) {
-      alert("Error al verificar");
+      alert("Error al verificar el código");
     }
   };
 
   return (
-    <div className="container">
-      <h2>Verificación MFA</h2>
+    <div className="container-auth">
+      
+      {/* SECCIÓN DEL CÓDIGO (Siempre visible) */}
+      <div style={{ marginBottom: '30px' }}>
+        <input
+          className="input-osnet"
+          type="text"
+          placeholder="Ingrese codigo"
+          value={codigo}
+          maxLength={6}
+          style={{ textAlign: 'center', fontSize: '18px' }}
+          onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
+        />
+        <button 
+          className="btn-osnet btn-primary-osnet" 
+          onClick={verificarCodigo} 
+          style={{ marginTop: '15px', width: '100%' }}
+        >
+          Confirmar Código
+        </button>
+      </div>
+
+      {/* MODAL DEL QR (Solo si es primera vez) */}
       {isFirstTime && qrCodeUrl && (
-        <div style={{ textAlign: 'center', margin: '20px 0' }}>
-          <p>Vincula tu cuenta escaneando este QR:</p>
-          <img src={qrCodeUrl} alt="QR" style={{ border: '5px solid white' }} />
+        <div className="qr-modal">
+          <h2 className="qr-title-modal">Escanea con Google Authenticator</h2>
+          
+          <div className="qr-image-wrapper">
+            <img src={qrCodeUrl} alt="QR Setup" style={{ width: '200px' }} />
+          </div>
+          
+          <div>
+            <button 
+              className="btn-qr-close" 
+              onClick={() => navigate("/")}
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
       )}
-      <input
-        className="input"
-        type="text"
-        placeholder="Ingrese código de 6 dígitos"
-        value={codigo}
-        onChange={(e) => setCodigo(e.target.value)}
-      />
-      <button className="button" onClick={verificarCodigo} style={{ marginTop: '20px' }}>
-        Confirmar
-      </button>
+
+      {!isFirstTime && (
+        <button 
+          className="btn-osnet btn-secondary-osnet" 
+          style={{ background: 'transparent', color: 'white' }} 
+          onClick={() => navigate("/")}
+        >
+          Volver
+        </button>
+      )}
+
+      <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" />
     </div>
   );
 }

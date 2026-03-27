@@ -1,197 +1,124 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Pie, Bar, Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from "chart.js";
+import { Pie, Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend } from "chart.js";
 import "../App.css";
 
-// Registrar componentes de Chart.js
-ChartJS.register(
-  CategoryScale, 
-  LinearScale, 
-  BarElement, 
-  ArcElement, 
-  PointElement, 
-  LineElement, 
-  Title, 
-  Tooltip, 
-  Legend
-);
+// Configuración de colores para las gráficas que contrasten bien en tema oscuro
+const CHART_COLORS = ["#00d0dc", "#ff66aa", "#ccddff", "#ffcc66", "#9933FF"];
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
 function Clientes() {
   const navigate = useNavigate();
-
-  // 🔎 ESTADOS PARA FILTROS
-  const [searchId, setSearchId] = useState("");
-  const [searchCliente, setSearchCliente] = useState("");
-  const [searchTipo, setSearchTipo] = useState("");
-  const [searchMonto, setSearchMonto] = useState("");
-  const [searchFecha, setSearchFecha] = useState("");
-  const [searchAgente, setSearchAgente] = useState("");
-
   const [data, setData] = useState([]);
   const token = localStorage.getItem("token");
 
-  // 🚀 FETCH DE DATOS
-  useEffect(() => {
-    if (!token) {
-      navigate("/");
-      return;
-    }
+  // Filtros (Estilo adaptado en CSS)
+  const [searchTipo, setSearchTipo] = useState("All");
 
+  useEffect(() => {
+    if (!token) { navigate("/"); return; }
     const obtenerDatos = async () => {
       try {
-        const params = new URLSearchParams();
-        if (searchId) params.append("client_id", searchId);
-        if (searchCliente) params.append("client", searchCliente);
-        if (searchTipo) params.append("type", searchTipo);
-        if (searchMonto) params.append("amount_min", searchMonto);
-        if (searchFecha) params.append("date_from", searchFecha);
-        if (searchAgente) params.append("agent", searchAgente);
-
-        const url = `http://localhost:3002/records?${params.toString()}`;
-
-        const res = await fetch(url, {
-          headers: {
-            // El backend debe usar este Token para filtrar registros del usuario logueado
-            Authorization: `Bearer ${token}` 
-          }
+        const res = await fetch(`http://localhost:3002/records`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-
-        if (res.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/");
-          return;
-        }
-
         const result = await res.json();
         setData(Array.isArray(result) ? result : result.data || []);
-
-      } catch (error) {
-        console.error("Error al obtener datos:", error);
-      }
+      } catch (error) { console.error("Error:", error); }
     };
-
     obtenerDatos();
-  }, [searchId, searchCliente, searchTipo, searchMonto, searchFecha, searchAgente, token, navigate]);
+  }, [token, navigate]);
 
-  // 📊 LÓGICA DE DATOS PARA GRÁFICOS (Memoizada para rendimiento)
-  const tipoData = useMemo(() => ({
-    labels: ["Pago", "Cobro"],
-    datasets: [{
-      label: "Total $",
-      data: [
-        data.filter(d => d.type?.toLowerCase() === "pago").reduce((sum, d) => sum + Number(d.amount), 0),
-        data.filter(d => d.type?.toLowerCase() === "cobro").reduce((sum, d) => sum + Number(d.amount), 0)
-      ],
-      backgroundColor: ["#4CAF50", "#F44336"]
-    }]
-  }), [data]);
+  // KPIs
+  const totalAmount = useMemo(() => 
+    (data.reduce((sum, d) => sum + Number(d.amount), 0) / 1000000).toFixed(2), [data]);
+  
+  const totalQty = useMemo(() => (data.length / 1000).toFixed(0), [data]);
 
-  const clienteData = useMemo(() => {
-    const clientesUnicos = [...new Set(data.map(d => d.client))];
+  // Gráfica de Barras (Monto por mes)
+  const amountPerMonthData = useMemo(() => {
+    const meses = ["agosto", "septiembre", "octubre", "noviembre"];
+    const tipos = [...new Set(data.map(d => d.type))]; 
+
     return {
-      labels: clientesUnicos,
+      labels: meses,
+      datasets: tipos.map((tipo, index) => ({
+        label: tipo,
+        data: meses.map(mes => data.filter(d => d.type === tipo && new Date(d.date).toLocaleString('es-ES', { month: 'long' }) === mes).reduce((sum, d) => sum + (Number(d.amount) / 1000000), 0)),
+        backgroundColor: CHART_COLORS[index % CHART_COLORS.length],
+      }))
+    };
+  }, [data]);
+
+  const pieData = useMemo(() => {
+    const tipos = [...new Set(data.map(d => d.type))];
+    const montos = tipos.map(t => data.filter(d => d.type === t).reduce((sum, d) => sum + Number(d.amount), 0));
+    return {
+      labels: tipos,
       datasets: [{
-        label: "Monto por Cliente",
-        data: clientesUnicos.map(c =>
-          data.filter(d => d.client === c).reduce((sum, d) => sum + Number(d.amount), 0)
-        ),
-        backgroundColor: "#2196F3"
+        data: montos,
+        backgroundColor: CHART_COLORS,
       }]
     };
   }, [data]);
 
-  const fechaData = useMemo(() => {
-    const fechas = [...new Set(data.map(d => d.date))].sort();
+  const qtyData = useMemo(() => {
+    const tipos = [...new Set(data.map(d => d.type))];
     return {
-      labels: fechas.map(f => new Date(f).toLocaleDateString()),
-      datasets: [
-        {
-          label: "Pagos",
-          data: fechas.map(f =>
-            data.filter(d => d.date === f && d.type === "pago").reduce((sum, d) => sum + Number(d.amount), 0)
-          ),
-          borderColor: "#4CAF50",
-          tension: 0.3
-        },
-        {
-          label: "Cobros",
-          data: fechas.map(f =>
-            data.filter(d => d.date === f && d.type === "cobro").reduce((sum, d) => sum + Number(d.amount), 0)
-          ),
-          borderColor: "#F44336",
-          tension: 0.3
-        }
-      ]
+      labels: tipos,
+      datasets: [{ label: 'Cantidad', data: tipos.map(t => data.filter(d => d.type === t).length), backgroundColor: "#00d0dc" }]
     };
   }, [data]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
+  const handleLogout = () => { localStorage.removeItem("token"); navigate("/"); };
 
   return (
-    <div className="containerTable">
-      <div className="container2">
-        
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 className="title">Panel Visual de Registros</h2>
-          <button onClick={handleLogout} className="clearButton" style={{ height: '40px' }}>Cerrar Sesión</button>
+    <div className="dashboard-container">
+      
+      {/* KPIs UNIFICADOS */}
+      <div className="kpi-row">
+        <div className="kpi-card">
+          <p>TOTAL $ AMOUNT</p>
+          <h1>{totalAmount}M</h1>
         </div>
-
-        {/* 🔍 SECCIÓN DE FILTROS */}
-        <div className="filtros-container">
-          <p style={{ marginBottom: '10px', fontWeight: 'bold' }}>Filtrar Gráficas:</p>
-          <div className="searchBox">
-            <input value={searchId} onChange={(e) => setSearchId(e.target.value)} placeholder="ID Cliente" />
-            <input value={searchCliente} onChange={(e) => setSearchCliente(e.target.value)} placeholder="Nombre Cliente" />
-            <input value={searchTipo} onChange={(e) => setSearchTipo(e.target.value)} placeholder="Tipo (pago/cobro)" />
-            <input value={searchMonto} onChange={(e) => setSearchMonto(e.target.value)} placeholder="Monto Min" />
-            <input value={searchFecha} onChange={(e) => setSearchFecha(e.target.value)} type="date" />
-            <input value={searchAgente} onChange={(e) => setSearchAgente(e.target.value)} placeholder="ID Agente" />
-          </div>
+        <div className="kpi-card">
+          <p>PAYMENTS QTY</p>
+          <h1>{totalQty}K</h1>
         </div>
+        <button onClick={handleLogout} className="btn-osnet btn-secondary-osnet" style={{ height: '50px' }}>Cerrar Sesión</button>
+      </div>
 
-        <hr style={{ margin: '30px 0', border: '0.5px solid #eee' }} />
+      {/* FILTROS UNIFICADOS */}
+      <div className="filter-row">
+        <div className="filter-box">
+          <span>PAYMENT TYPE</span>
+          <select value={searchTipo} onChange={(e) => setSearchTipo(e.target.value)}>
+            <option value="All">All</option>
+            {[...new Set(data.map(d => d.type))].map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+        <div className="filter-box"><span>DATE</span><select disabled><option>All</option></select></div>
+      </div>
 
-        {/* 📊 CONTENEDOR DE GRÁFICAS (Grid) */}
-        {data.length > 0 ? (
-          <div className="charts-grid">
-            <div className="chart-card">
-              <h3>Distribución de Transacciones</h3>
-              <div style={{ maxWidth: '300px', margin: 'auto' }}>
-                <Pie data={tipoData} />
-              </div>
-            </div>
+      {/* GRÁFICA PRINCIPAL */}
+      <div className="chart-section full-width">
+        <div className="chart-header">$ AMOUNT PER PAYMENT TYPE</div>
+        <div className="chart-body" style={{ height: '300px' }}>
+          <Bar data={amountPerMonthData} options={{ responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, ticks: {color: '#fff'} }, y: { stacked: true, ticks: {color: '#fff'} } }, plugins: { legend: { labels: { color: '#fff' } } } }} />
+        </div>
+      </div>
 
-            <div className="chart-card">
-              <h3>Montos Acumulados por Cliente</h3>
-              <Bar data={clienteData} options={{ indexAxis: 'y', responsive: true }} />
-            </div>
-
-            <div className="chart-card full-width">
-              <h3>Tendencia de Movimientos</h3>
-              <Line data={fechaData} options={{ responsive: true }} />
-            </div>
-          </div>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '50px' }}>
-            <p>No se encontraron datos para los filtros seleccionados.</p>
-          </div>
-        )}
-
+      {/* GRÁFICAS INFERIORES */}
+      <div className="bottom-charts">
+        <div className="chart-section half-width">
+          <div className="chart-header">$ AMOUNT PER PAYMENT TYPE</div>
+          <div className="chart-body"><Pie data={pieData} options={{plugins: { legend: { labels: { color: '#fff' } } }}} /></div>
+        </div>
+        <div className="chart-section half-width">
+          <div className="chart-header">PAYMENT QTY PER PAYMENT TYPE</div>
+          <div className="chart-body"><Bar data={qtyData} options={{ indexAxis: 'y', scales: { x: { ticks: {color: '#fff'} }, y: { ticks: {color: '#fff'} } }, plugins: { legend: { display: false } } }} /></div>
+        </div>
       </div>
     </div>
   );
