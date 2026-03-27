@@ -13,8 +13,7 @@
   --card-border: rgba(255, 255, 255, 0.1);
   --input-bg: rgba(255, 255, 255, 0.9);
   
-  /* Colores de acento para botones 
-   /* Azul del botón Iniciar Sesión */
+  
   --btn-secondary: #777777; 
   --btn-qr: #4ca1ff; /* Azul del botón Cerrar del QR */
 }
@@ -84,7 +83,7 @@ body {
 .btn-osnet {
   padding: 12px 30px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
   transition: background 0.3s;
@@ -241,3 +240,8 @@ body {
 
 .half-width { width: 50%; }
 .full-width { width: 100%; }
+
+.auth-title {
+  position: center;
+  align-items: end;
+}

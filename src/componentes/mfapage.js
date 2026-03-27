@@ -8,6 +8,7 @@ function MfaPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Obtenemos los datos enviados desde el Login
   const { userId, qrCodeUrl, isFirstTime } = location.state || {};
 
   useEffect(() => {
@@ -33,7 +34,7 @@ function MfaPage() {
 
       if (res.ok && data.access_token) {
         localStorage.setItem("token", data.access_token);
-        navigate("/clientes"); // Acceso concedido a las gráficas unificadas
+        navigate("/clientes"); 
       } else {
         alert(data.message || "Código incorrecto");
       }
@@ -44,55 +45,53 @@ function MfaPage() {
 
   return (
     <div className="container-auth">
-      
-      {/* SECCIÓN DEL CÓDIGO (Siempre visible) */}
-      <div style={{ marginBottom: '30px' }}>
+      <div className="form-auth">
+        <h2 className="auth-title">Ingresar Codigo</h2>
+        
         <input
-          className="input-osnet"
+          className="input-osnet input-mfa"
           type="text"
-          placeholder="Ingrese codigo"
+          placeholder="000000"
           value={codigo}
           maxLength={6}
-          style={{ textAlign: 'center', fontSize: '18px' }}
           onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
+          style={{ textAlign: 'center', fontSize: '15px', letterSpacing: '8px' }}
         />
+        
         <button 
           className="btn-osnet btn-primary-osnet" 
-          onClick={verificarCodigo} 
-          style={{ marginTop: '15px', width: '100%' }}
+          onClick={verificarCodigo}
+          style={{ marginTop: '5px', width: '50%' }}
         >
           Confirmar Código
         </button>
+
+        {!isFirstTime && (
+          <button 
+            className="btn-osnet" 
+            style={{ background: 'transparent', marginTop: '10px', fontSize: '14px' }} 
+            onClick={() => navigate("/")}
+          >
+            Volver al inicio
+          </button>
+        )}
       </div>
 
-      {/* MODAL DEL QR (Solo si es primera vez) */}
       {isFirstTime && qrCodeUrl && (
-        <div className="qr-modal">
-          <h2 className="qr-title-modal">Escanea con Google Authenticator</h2>
-          
-          <div className="qr-image-wrapper">
-            <img src={qrCodeUrl} alt="QR Setup" style={{ width: '200px' }} />
-          </div>
-          
-          <div>
-            <button 
-              className="btn-qr-close" 
-              onClick={() => navigate("/")}
-            >
-              Cerrar
+        <div className="qr-modal-overlay">
+          <div className="qr-modal">
+            <h2 className="qr-title-modal">Configura tu Doble Factor</h2>
+            <p style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>
+              Escanea este código con Google Authenticator
+            </p>
+            <div className="qr-image-wrapper">
+              <img src={qrCodeUrl} alt="QR Setup" style={{ width: '180px' }} />
+            </div>
+            <button className="btn-qr-close" onClick={() => navigate(0)}>
+              Ya lo escaneé
             </button>
           </div>
         </div>
-      )}
-
-      {!isFirstTime && (
-        <button 
-          className="btn-osnet btn-secondary-osnet" 
-          style={{ background: 'transparent', color: 'white' }} 
-          onClick={() => navigate("/")}
-        >
-          Volver
-        </button>
       )}
 
       <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" />
