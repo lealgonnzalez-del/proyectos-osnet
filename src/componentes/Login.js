@@ -7,10 +7,12 @@ function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await fetch('http://localhost:3002/auth/login', {
@@ -20,32 +22,37 @@ function Login() {
       });
 
       const data = await res.json();
-      console.log("LOGIN RESPONSE:", data);
 
-      // CASO 1: Es la primera vez (Requiere generar QR)
-      if (data.tempToken) {
+      // CASO 1: Primera vez (Generar QR)
+      if (data.access_token) {
         const qrRes = await fetch('http://localhost:3002/auth/mfa/generate', {
-          headers: { Authorization: `Bearer ${data.tempToken}` }
+          headers: { Authorization: `Bearer ${data.access_token}` }
         });
         const qrData = await qrRes.json();
 
         navigate('/mfa', { 
           state: { 
-            userId: data.userId, 
+            userId: data.user.id, 
             qrCodeUrl: qrData.qrCodeUrl, 
-            isFirstTime: true 
+            isFirstTime: true,
+            
           } 
         });
         return;
       }
 
-      // CASO 2: Ya está vinculado (MfaPage unificada)
+      // CASO 2: Ya configurado (Solo pedir código)
       if (data.mfaRequired) {
-        navigate('/mfa', { state: { userId: data.userId, isFirstTime: false } });
+        navigate('/mfa', { 
+          state: { 
+            userId: data.userId, 
+            isFirstTime: false 
+          } 
+        });
         return;
       }
 
-      // CASO 3: Login directo
+      // CASO 3: Login directo (MFA desactivado)
       if (data.access_token) {
         localStorage.setItem('token', data.access_token);
         navigate('/clientes');
@@ -55,6 +62,8 @@ function Login() {
     } catch (error) {
       console.error("Error en login:", error);
       alert("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,7 +72,6 @@ function Login() {
       <h2 className="auth-title">Inicio de Sesión</h2>
       
       <form onSubmit={handleLogin} className="form-auth">
-        
         <input
           className="input-osnet"
           placeholder="Usuario"
@@ -81,16 +89,14 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          
           <span className="eye-icon" onClick={() => setMostrarPassword(!mostrarPassword)}>
             {mostrarPassword ? '👁️' : '👁️‍🗨️'}
           </span>
         </div>
 
-        
         <div className="auth-buttons">
-          <button type="submit" className="btn-osnet btn-primary-osnet">
-            Iniciar Sesión
+          <button type="submit" className="btn-osnet btn-primary-osnet" disabled={loading}>
+            {loading ? 'Cargando...' : 'Iniciar Sesión'}
           </button>
           <button
             type="button"
@@ -101,7 +107,6 @@ function Login() {
           </button>
         </div>
       </form>
-      
       
       <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" />
     </div>

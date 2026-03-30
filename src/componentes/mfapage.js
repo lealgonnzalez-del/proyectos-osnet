@@ -5,11 +5,15 @@ import logo from '../imagenes/osnet.png';
 
 function MfaPage() {
   const [codigo, setCodigo] = useState("");
+  const [verificando, setVerificando] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Obtenemos los datos enviados desde el Login
-  const { userId, qrCodeUrl, isFirstTime } = location.state || {};
+  // 1. Recuperamos tempToken que viene del Login
+  const { userId, qrCodeUrl, tempToken, isFirstTime } = location.state || {};
+  
+  // 2. Controlamos el modal con un estado de React en lugar de document.querySelector
+  const [mostrarModal, setMostrarModal] = useState(isFirstTime);
 
   useEffect(() => {
     if (!userId) {
@@ -23,11 +27,20 @@ function MfaPage() {
       return;
     }
 
+    setVerificando(true);
     try {
       const res = await fetch('http://localhost:3002/auth/mfa/verify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, mfaCode: codigo }),
+        headers: { 
+          'Content-Type': 'application/json',
+          // AJUSTE A: Enviamos el token temporal para autorizar la petición
+          'Authorization': `Bearer ${tempToken}` 
+        },
+        body: JSON.stringify({ 
+          userId: userId, 
+          // AJUSTE B: Asegúrate que el backend espere 'mfaCode' o 'twoFactorAuthenticationCode'
+          mfaCode: codigo 
+        }),
       });
 
       const data = await res.json();
@@ -36,58 +49,67 @@ function MfaPage() {
         localStorage.setItem("token", data.access_token);
         navigate("/clientes"); 
       } else {
-        alert(data.message || "Código incorrecto");
+        alert(data.message || "Código incorrecto o expirado");
       }
     } catch (error) {
-      alert("Error al verificar el código");
+      alert("Error al conectar con el servidor");
+    } finally {
+      setVerificando(false);
     }
   };
 
   return (
     <div className="container-auth">
       <div className="form-auth">
-        <h2 className="auth-title">Ingresar Codigo</h2>
+        <p style={{ color: '#fff', fontSize: '14px', marginBottom: '20px', textAlign: 'center' }}>
+          {isFirstTime 
+            ? "Escanea el código QR y luego ingresa el código de tu App." 
+            : "Ingresa el código de 6 dígitos de tu aplicación Authenticator."}
+        </p>
         
         <input
-          className="input-osnet input-mfa"
+          className="input-osnet"
           type="text"
           placeholder="000000"
           value={codigo}
           maxLength={6}
           onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
-          style={{ textAlign: 'center', fontSize: '15px', letterSpacing: '8px' }}
+          style={{ textAlign: 'center', fontSize: '20px', letterSpacing: '8px' }}
         />
         
         <button 
           className="btn-osnet btn-primary-osnet" 
           onClick={verificarCodigo}
-          style={{ marginTop: '5px', width: '50%' }}
+          disabled={verificando}
+          style={{ marginTop: '20px' }}
         >
-          Confirmar Código
+          {verificando ? 'Verificando...' : 'Confirmar Código'}
         </button>
 
-        {!isFirstTime && (
-          <button 
-            className="btn-osnet" 
-            style={{ background: 'transparent', marginTop: '10px', fontSize: '14px' }} 
-            onClick={() => navigate("/")}
-          >
-            Volver al inicio
-          </button>
-        )}
+        <button 
+          className="btn-osnet btn-secondary-osnet" 
+          style={{ marginTop: '10px' }} 
+          onClick={() => navigate("/")}
+        >
+          Volver al inicio
+        </button>
       </div>
 
-      {isFirstTime && qrCodeUrl && (
+      
+      {isFirstTime && qrCodeUrl && mostrarModal && (
         <div className="qr-modal-overlay">
           <div className="qr-modal">
-            <h2 className="qr-title-modal">Configura tu Doble Factor</h2>
-            <p style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>
-              Escanea este código con Google Authenticator
+            <h2 className="qr-title-modal">Configurar Doble Factor</h2>
+            <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>
+              Abre Google Authenticator o Microsoft Authenticator y escanea:
             </p>
             <div className="qr-image-wrapper">
               <img src={qrCodeUrl} alt="QR Setup" style={{ width: '180px' }} />
             </div>
-            <button className="btn-qr-close" onClick={() => navigate(0)}>
+            <p style={{ color: '#888', fontSize: '11px', marginTop: '10px' }}>
+              Una vez escaneado, cierra esta ventana e ingresa el código.
+            </p>
+            <button className="btn-qr-close" onClick={() => setMostrarModal(false)}>
               Ya lo escaneé
             </button>
           </div>

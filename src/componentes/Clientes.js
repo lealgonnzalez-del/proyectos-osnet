@@ -4,16 +4,14 @@ import { Pie, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend } from "chart.js";
 import "../App.css";
 
-// Configuración de colores para las gráficas que contrasten bien en tema oscuro
-const CHART_COLORS = ["#00d0dc", "#ff66aa", "#ccddff", "#ffcc66", "#9933FF"];
+// Colores vibrantes estilo Dashboard moderno
+const CHART_COLORS = ["#007bff", "#6610f2", "#6f42c1", "#e83e8c", "#fd7e14", "#20c997"];
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
 function Clientes() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const token = localStorage.getItem("token");
-
-  // Filtros (Estilo adaptado en CSS)
   const [searchTipo, setSearchTipo] = useState("All");
 
   useEffect(() => {
@@ -30,17 +28,27 @@ function Clientes() {
     obtenerDatos();
   }, [token, navigate]);
 
-  // KPIs
+  // Configuración base para que los textos de las gráficas sean OSCUROS
+  const darkTextOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: '#333', font: { weight: 'bold' } } }
+    },
+    scales: {
+      x: { ticks: { color: '#333' }, grid: { display: false } },
+      y: { ticks: { color: '#333' } }
+    }
+  };
+
   const totalAmount = useMemo(() => 
     (data.reduce((sum, d) => sum + Number(d.amount), 0) / 1000000).toFixed(2), [data]);
   
   const totalQty = useMemo(() => (data.length / 1000).toFixed(0), [data]);
 
-  // Gráfica de Barras (Monto por mes)
   const amountPerMonthData = useMemo(() => {
     const meses = ["agosto", "septiembre", "octubre", "noviembre"];
     const tipos = [...new Set(data.map(d => d.type))]; 
-
     return {
       labels: meses,
       datasets: tipos.map((tipo, index) => ({
@@ -56,10 +64,7 @@ function Clientes() {
     const montos = tipos.map(t => data.filter(d => d.type === t).reduce((sum, d) => sum + Number(d.amount), 0));
     return {
       labels: tipos,
-      datasets: [{
-        data: montos,
-        backgroundColor: CHART_COLORS,
-      }]
+      datasets: [{ data: montos, backgroundColor: CHART_COLORS }]
     };
   }, [data]);
 
@@ -67,7 +72,7 @@ function Clientes() {
     const tipos = [...new Set(data.map(d => d.type))];
     return {
       labels: tipos,
-      datasets: [{ label: 'Cantidad', data: tipos.map(t => data.filter(d => d.type === t).length), backgroundColor: "#00d0dc" }]
+      datasets: [{ label: 'Cantidad', data: tipos.map(t => data.filter(d => d.type === t).length), backgroundColor: "#007bff" }]
     };
   }, [data]);
 
@@ -75,8 +80,6 @@ function Clientes() {
 
   return (
     <div className="dashboard-container">
-      
-      {/* KPIs UNIFICADOS */}
       <div className="kpi-row">
         <div className="kpi-card">
           <p>TOTAL $ AMOUNT</p>
@@ -86,10 +89,9 @@ function Clientes() {
           <p>PAYMENTS QTY</p>
           <h1>{totalQty}K</h1>
         </div>
-        <button onClick={handleLogout} className="btn-osnet btn-secondary-osnet" style={{ height: '50px' }}>Cerrar Sesión</button>
+        <button onClick={handleLogout} className="btn-secondary-osnet" style={{ height: '50px', marginLeft: 'auto' }}>Cerrar Sesión</button>
       </div>
 
-      {/* FILTROS UNIFICADOS */}
       <div className="filter-row">
         <div className="filter-box">
           <span>PAYMENT TYPE</span>
@@ -101,23 +103,21 @@ function Clientes() {
         <div className="filter-box"><span>DATE</span><select disabled><option>All</option></select></div>
       </div>
 
-      {/* GRÁFICA PRINCIPAL */}
       <div className="chart-section full-width">
         <div className="chart-header">$ AMOUNT PER PAYMENT TYPE</div>
-        <div className="chart-body" style={{ height: '300px' }}>
-          <Bar data={amountPerMonthData} options={{ responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, ticks: {color: '#fff'} }, y: { stacked: true, ticks: {color: '#fff'} } }, plugins: { legend: { labels: { color: '#fff' } } } }} />
+        <div className="chart-body" style={{ height: '250px' }}>
+          <Bar data={amountPerMonthData} options={{...darkTextOptions, scales: { x: { stacked: true, ticks: {color: '#333'} }, y: { stacked: true, ticks: {color: '#333'} } }}} />
         </div>
       </div>
 
-      {/* GRÁFICAS INFERIORES */}
       <div className="bottom-charts">
         <div className="chart-section half-width">
           <div className="chart-header">$ AMOUNT PER PAYMENT TYPE</div>
-          <div className="chart-body"><Pie data={pieData} options={{plugins: { legend: { labels: { color: '#fff' } } }}} /></div>
+          <div className="chart-body"><Pie data={pieData} options={darkTextOptions} /></div>
         </div>
         <div className="chart-section half-width">
           <div className="chart-header">PAYMENT QTY PER PAYMENT TYPE</div>
-          <div className="chart-body"><Bar data={qtyData} options={{ indexAxis: 'y', scales: { x: { ticks: {color: '#fff'} }, y: { ticks: {color: '#fff'} } }, plugins: { legend: { display: false } } }} /></div>
+          <div className="chart-body"><Bar data={qtyData} options={{ ...darkTextOptions, indexAxis: 'y', plugins: { legend: { display: false } } }} /></div>
         </div>
       </div>
     </div>
