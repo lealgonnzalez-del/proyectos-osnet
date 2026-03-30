@@ -20,6 +20,7 @@ function Login() {
       });
 
       const data = await res.json();
+      console.log("LOGIN RESPONSE:", data);
 
       // CASO 1: Es la primera vez (Requiere generar QR)
       if (data.tempToken) {
@@ -61,7 +62,8 @@ function Login() {
     <div className="container-auth">
       <h2 className="auth-title">Inicio de Sesión</h2>
       
-      <form onSubmit={handleLogin} style={{ textAlign: 'center' }}>
+      <form onSubmit={handleLogin} className="form-auth">
+        
         <input
           className="input-osnet"
           placeholder="Usuario"
@@ -72,20 +74,24 @@ function Login() {
         
         <div className="password-wrapper">
           <input
-            className="input-osnet"
+            className="input-osnet input-password-osnet"
             type={mostrarPassword ? 'text' : 'password'}
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          
           <span className="eye-icon" onClick={() => setMostrarPassword(!mostrarPassword)}>
-            {mostrarPassword ? '🙈' : '👁'}
+            {mostrarPassword ? '👁️' : '👁️‍🗨️'}
           </span>
         </div>
 
+        
         <div className="auth-buttons">
-          <button type="submit" className="btn-osnet btn-primary-osnet">Iniciar Sesión</button>
+          <button type="submit" className="btn-osnet btn-primary-osnet">
+            Iniciar Sesión
+          </button>
           <button
             type="button"
             className="btn-osnet btn-secondary-osnet"
@@ -95,6 +101,7 @@ function Login() {
           </button>
         </div>
       </form>
+      
       
       <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" />
     </div>
