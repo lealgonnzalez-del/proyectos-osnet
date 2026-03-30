@@ -9,10 +9,10 @@ function MfaPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 1. Recuperamos tempToken que viene del Login
+  
   const { userId, qrCodeUrl, tempToken, isFirstTime } = location.state || {};
   
-  // 2. Controlamos el modal con un estado de React en lugar de document.querySelector
+  
   const [mostrarModal, setMostrarModal] = useState(isFirstTime);
 
   useEffect(() => {
@@ -33,12 +33,12 @@ function MfaPage() {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          // AJUSTE A: Enviamos el token temporal para autorizar la petición
+          
           'Authorization': `Bearer ${tempToken}` 
         },
         body: JSON.stringify({ 
           userId: userId, 
-          // AJUSTE B: Asegúrate que el backend espere 'mfaCode' o 'twoFactorAuthenticationCode'
+          
           mfaCode: codigo 
         }),
       });
