@@ -28,7 +28,7 @@ function Clientes() {
     obtenerDatos();
   }, [token, navigate]);
 
-  // Configuración base para que los textos de las gráficas sean OSCUROS
+  
   const darkTextOptions = {
     responsive: true,
     maintainAspectRatio: false,
