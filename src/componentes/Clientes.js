@@ -33,7 +33,7 @@ function Clientes() {
   const [loading, setLoading] = useState(true);
   
   const [searchTipo, setSearchTipo] = useState("All");
-  const [searchMes, setSearchMes] = useState("All");
+  const [searchFecha, setSearchFecha] = useState("All"); // Nuevo estado para YYYY-MM-DD
 
   const token = localStorage.getItem("token");
 
@@ -64,15 +64,15 @@ function Clientes() {
     return data.filter(d => {
       const typeLower = String(d.type || "").toLowerCase();
       const matchTipo = searchTipo === "All" || typeLower === searchTipo.toLowerCase();
-      const nombreMes = new Date(d.date).toLocaleString('es-ES', { month: 'long' }).toLowerCase();
-      const matchMes = searchMes === "All" || nombreMes.includes(searchMes.toLowerCase());
-      return matchTipo && matchMes;
+      
+      // Filtro de Fecha (Year-Month-Day)
+      const dateObj = new Date(d.date);
+      const formattedDate = dateObj.toISOString().split('T')[0];
+      const matchFecha = searchFecha === "All" || formattedDate === searchFecha;
+      
+      return matchTipo && matchFecha;
     });
-  }, [data, searchTipo, searchMes]);
-
-  const listaMeses = useMemo(() => 
-    [...new Set(data.map(d => new Date(d.date).toLocaleString('es-ES', { month: 'long' })))], 
-  [data]);
+  }, [data, searchTipo, searchFecha]);
 
   const totalAmount = useMemo(() => {
     const total = filteredData.reduce((sum, d) => sum + Number(d.amount || 0), 0);
@@ -182,11 +182,14 @@ function Clientes() {
           </select>
         </div>
         <div className="filter-box">
-          <span>DATE</span>
-          <select value={searchMes} onChange={(e) => setSearchMes(e.target.value)}>
-            <option value="All">All Months</option>
-            {listaMeses.map(m => <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
-          </select>
+          <span>DATE (D/M/Y)</span>
+          <input 
+            type="date" 
+            value={searchFecha === "All" ? "" : searchFecha} 
+            onChange={(e) => setSearchFecha(e.target.value || "All")}
+            className="filter-select" // O usa estilos directos si prefieres
+            style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc', outline: 'none' }}
+          />
         </div>
       </div>
 
