@@ -11,22 +11,36 @@ import {
   Tooltip, 
   Legend 
 } from "chart.js";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import "../App.css";
 
-const CHART_COLORS = ["#007bff", "#6610f2", "#6f42c1", "#e83e8c", "#fd7e14", "#20c997"];
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
+const CHART_COLORS = ["#6f42c1", "#007bff", "#5a2d81", "#e83e8c", "#20c997", "#fd7e14", "#ffc107", "#28a745"];
+
+ChartJS.register(
+  CategoryScale, 
+  LinearScale, 
+  BarElement, 
+  ArcElement, 
+  Title, 
+  Tooltip, 
+  Legend,
+  ChartDataLabels 
+);
 
 function Clientes() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // ESTADOS DE FILTROS
   const [searchTipo, setSearchTipo] = useState("All");
   const [searchMes, setSearchMes] = useState("All");
-  const [searchClientId, setSearchClientId] = useState("All");
 
   const token = localStorage.getItem("token");
+
+  const paymentTypes = [
+    "pago", "cobro", "tarjeta de credito", "cheque", 
+    "paypal", "efectivo", "credito a cuenta", "otro"
+  ];
 
   useEffect(() => {
     if (!token) { navigate("/"); return; }
@@ -46,22 +60,20 @@ function Clientes() {
     obtenerDatos();
   }, [token, navigate]);
 
-  // LÓGICA DE FILTRADO TRIPLE
   const filteredData = useMemo(() => {
     return data.filter(d => {
-      const matchTipo = searchTipo === "All" || d.type === searchTipo;
+      const typeLower = String(d.type || "").toLowerCase();
+      const matchTipo = searchTipo === "All" || typeLower === searchTipo.toLowerCase();
       const nombreMes = new Date(d.date).toLocaleString('es-ES', { month: 'long' }).toLowerCase();
       const matchMes = searchMes === "All" || nombreMes.includes(searchMes.toLowerCase());
-      const matchClientId = searchClientId === "All" || String(d.client_id) === searchClientId;
-      return matchTipo && matchMes && matchClientId;
+      return matchTipo && matchMes;
     });
-  }, [data, searchTipo, searchMes, searchClientId]);
+  }, [data, searchTipo, searchMes]);
 
-  // Listas dinámicas para Selects
-  const listaMeses = useMemo(() => [...new Set(data.map(d => new Date(d.date).toLocaleString('es-ES', { month: 'long' })))], [data]);
-  const listaClients = useMemo(() => [...new Set(data.map(d => String(d.client_id)))].filter(id => id !== "undefined"), [data]);
+  const listaMeses = useMemo(() => 
+    [...new Set(data.map(d => new Date(d.date).toLocaleString('es-ES', { month: 'long' })))], 
+  [data]);
 
-  // KPIs DINÁMICOS
   const totalAmount = useMemo(() => {
     const total = filteredData.reduce((sum, d) => sum + Number(d.amount || 0), 0);
     return (total / 1000000).toFixed(2);
@@ -69,86 +81,87 @@ function Clientes() {
   
   const totalQty = useMemo(() => (filteredData.length / 1000).toFixed(1), [filteredData]);
 
-  // --- CONFIGURACIÓN DE GRÁFICA TENDENCIA (CON ESCALA CORREGIDA) ---
+  const pieData = useMemo(() => {
+    const tiposUnicos = [...new Set(filteredData.map(d => d.type))];
+    const mapping = tiposUnicos.map(t => {
+      const total = filteredData
+        .filter(d => d.type === t)
+        .reduce((sum, d) => sum + Number(d.amount), 0);
+      return { label: t, value: total };
+    });
+
+    mapping.sort((a, b) => b.value - a.value);
+
+    return {
+      labels: mapping.map(m => m.label.charAt(0).toUpperCase() + m.label.slice(1)),
+      datasets: [{ 
+        data: mapping.map(m => m.value),
+        backgroundColor: CHART_COLORS,
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    };
+  }, [filteredData]);
+
+  // --- CONFIGURACIÓN CORREGIDA ---
+  const pieOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'right',
+        labels: {
+          usePointStyle: true,
+          padding: 15,
+          color: '#333',
+          font: { size: 11, weight: '500' }
+        }
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'end',
+        offset: 10,
+        color: '#444',
+        font: { size: 10, weight: 'bold' },
+        clip: false, // Evita que se corten las etiquetas en los bordes
+        formatter: (value, ctx) => {
+          const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+          const percentage = ((value * 100) / sum).toFixed(2) + "%";
+          const formattedValue = (value / 1000).toFixed(2) + "K";
+          return `${formattedValue}\n(${percentage})`;
+        }
+      },
+      tooltip: { enabled: true }
+    },
+    layout: {
+      // Aumentamos el padding superior para bajar la torta y dejar espacio a los números
+      padding: { right: 60, left: 20, top: 40, bottom: 20 }
+    }
+  };
+
   const amountPerMonthData = useMemo(() => {
-    const mesesEstaticos = ["agosto", "septiembre", "octubre", "noviembre"];
-    const tipos = [...new Set(data.map(d => d.type))];
-    
+    const mesesEstaticos = ["agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const tiposActivos = [...new Set(filteredData.map(d => d.type))];
     return {
       labels: mesesEstaticos,
-      datasets: tipos.map((tipo, index) => ({
+      datasets: tiposActivos.map((tipo, index) => ({
         label: tipo,
-        data: mesesEstaticos.map(m => data
+        data: mesesEstaticos.map(m => filteredData
           .filter(d => d.type === tipo && new Date(d.date).toLocaleString('es-ES', { month: 'long' }).toLowerCase().includes(m))
           .reduce((sum, d) => sum + (Number(d.amount) / 1000000), 0)
         ),
         backgroundColor: CHART_COLORS[index % CHART_COLORS.length],
       }))
     };
-  }, [data]);
-
-  const pieData = useMemo(() => {
-    const tipos = [...new Set(filteredData.map(d => d.type))];
-    return {
-      labels: tipos,
-      datasets: [{ 
-        data: tipos.map(t => filteredData.filter(d => d.type === t).reduce((sum, d) => sum + Number(d.amount), 0)),
-        backgroundColor: CHART_COLORS,
-        borderWidth: 0 
-      }]
-    };
   }, [filteredData]);
-
-  const qtyData = useMemo(() => {
-    const tipos = [...new Set(filteredData.map(d => d.type))];
-    return {
-      labels: tipos,
-      datasets: [{ 
-        label: 'Cantidad', 
-        data: tipos.map(t => filteredData.filter(d => d.type === t).length), 
-        backgroundColor: "#007bff",
-        borderRadius: 5
-      }]
-    };
-  }, [filteredData]);
-
-  // OPCIONES DE GRÁFICA CON ESCALA AUTOMÁTICA
-  const trendOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { labels: { color: '#333', font: { weight: 'bold' } } }
-    },
-    scales: {
-      x: { stacked: true, ticks: { color: '#333' }, grid: { display: false } },
-      y: { 
-        stacked: true, 
-        beginAtZero: true, 
-        ticks: { 
-          color: '#333',
-          callback: (value) => value + 'M' 
-        },
-        grid: { color: 'rgba(0,0,0,0.05)' }
-      }
-    }
-  };
-
-  const darkTextOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { labels: { color: '#333', font: { weight: 'bold' } } }
-    },
-    scales: {
-      x: { ticks: { color: '#333' }, grid: { display: false } },
-      y: { ticks: { color: '#333' } }
-    }
-  };
 
   if (loading) return <div className="loading">Actualizando métricas...</div>;
 
   return (
     <div className="dashboard-container">
+       <button onClick={() => { localStorage.removeItem("token"); navigate("/"); }} className="btn-secondary-osnet" style={{ height: '15px',  marginBottom: '15px' }}>
+          Cerrar Sesión
+        </button>
       <div className="kpi-row">
         <div className="kpi-card">
           <p>TOTAL $ AMOUNT</p>
@@ -158,9 +171,7 @@ function Clientes() {
           <p>PAYMENTS QTY</p>
           <h1>{totalQty}K</h1>
         </div>
-        <button onClick={() => { localStorage.removeItem("token"); navigate("/"); }} className="btn-secondary-osnet" style={{ height: '50px', marginLeft: 'auto' }}>
-          Cerrar Sesión
-        </button>
+        
       </div>
 
       <div className="filter-row">
@@ -168,7 +179,9 @@ function Clientes() {
           <span>PAYMENT TYPE</span>
           <select value={searchTipo} onChange={(e) => setSearchTipo(e.target.value)}>
             <option value="All">All Types</option>
-            {[...new Set(data.map(d => d.type))].map(t => <option key={t} value={t}>{t}</option>)}
+            {paymentTypes.map(t => (
+              <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+            ))}
           </select>
         </div>
         <div className="filter-box">
@@ -178,31 +191,32 @@ function Clientes() {
             {listaMeses.map(m => <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
           </select>
         </div>
-        <div className="filter-box">
-          <span>CLIENT ID</span>
-          <select value={searchClientId} onChange={(e) => setSearchClientId(e.target.value)}>
-            <option value="All">All Clients</option>
-            {listaClients.map(id => <option key={id} value={id}>{id}</option>)}
-          </select>
-        </div>
       </div>
 
       <div className="chart-section full-width">
         <div className="chart-header">$ AMOUNT PER PAYMENT TYPE (MONTHLY TREND)</div>
         <div className="chart-body" style={{ height: '250px' }}>
-          <Bar data={amountPerMonthData} options={trendOptions} />
+          <Bar data={amountPerMonthData} options={{ responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: v => v + 'M' } } } }} />
         </div>
       </div>
 
       <div className="bottom-charts">
         <div className="chart-section half-width">
           <div className="chart-header">$ AMOUNT PER PAYMENT TYPE</div>
-          <div className="chart-body"><Pie data={pieData} options={darkTextOptions} /></div>
+          <div className="chart-body" style={{ height: '300px' }}>
+            <Pie data={pieData} options={pieOptions} />
+          </div>
         </div>
         <div className="chart-section half-width">
           <div className="chart-header">PAYMENT QTY PER PAYMENT TYPE</div>
-          <div className="chart-body">
-            <Bar data={qtyData} options={{ ...darkTextOptions, indexAxis: 'y', plugins: { legend: { display: false } } }} />
+          <div className="chart-body" style={{ height: '320px' }}>
+            <Bar 
+              data={{
+                labels: pieData.labels,
+                datasets: [{ label: 'Qty', data: pieData.labels.map(l => filteredData.filter(d => d.type.toLowerCase() === l.toLowerCase()).length), backgroundColor: '#007bff' }]
+              }} 
+              options={{ indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false }, legend: { display: false } } }} 
+            />
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@
   --text-white: #ffffff;
   --text-dark: #333333;
   --filter-bg: #e1f2ff;
+
   
 }
 
@@ -21,14 +22,16 @@ body {
   background-attachment: fixed;
   min-height: 100vh;
   color: white;
+  
 }
 
 
 /* DASHBOARD LAYOUT */
 .dashboard-container {
-  padding: 30px;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 20px;
+  margin: 0 ;
+  background: white;
+  min-height: 100vh;
 }
 
 .kpi-row, .bottom-charts, .filter-row {
@@ -43,7 +46,7 @@ body {
   flex: 1;
   background: var(--osnet-blue);
   border-radius: 10px;
-  padding: 20px;
+  padding: 10px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
@@ -120,19 +123,13 @@ body {
 
 /* BOTÓN CERRAR SESIÓN */
 .btn-secondary-osnet {
-  background-color: #888;
-  color: white;
+  
+  color: black;
   border: none;
-  border-radius: 5px;
-  padding: 10px 25px;
   cursor: pointer;
-  align-self: center;
-  font-weight: bold;
 }
 
-.btn-secondary-osnet:hover {
-  background-color: #666;
-}
+
 /*(Login/QR)*/
 
 .container-auth {
@@ -155,7 +152,7 @@ color: var(--text-primary);
 }
 
 .input-osnet {
-width: 220px;
+width: 250px;
 padding: 10px;
 margin: 10px 0;
 border-radius: 8px;
@@ -164,10 +161,11 @@ background: white;
 font-size: 16px;
 box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 
+
 }
 
 .input-osnet::placeholder {
-color: black;
+color: rgb(163, 161, 161);
 
 }
 
@@ -189,7 +187,7 @@ color: #555;
 
 .auth-buttons {
 display: flex;
-gap: 15px;
+gap: 50px;
 margin-top: 25px;
 }
 
@@ -268,4 +266,17 @@ border-radius: 5px;
 cursor: pointer;
 font-size: 14px;
 
+}
+.limpiar {
+  
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 10px 20px;
+  background-color: rgb(31, 31, 40)
+  
+}
+.limpiar:hover{
+  background-color: #4488ee;
 }

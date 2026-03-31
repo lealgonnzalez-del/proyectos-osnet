@@ -81,7 +81,7 @@ function MfaPage() {
           className="btn-osnet btn-primary-osnet" 
           onClick={verificarCodigo}
           disabled={verificando}
-          style={{ marginTop: '20px' }}
+          style={{ marginTop: '20px', marginLeft: '10px' }}
         >
           {verificando ? 'Verificando...' : 'Confirmar Código'}
         </button>

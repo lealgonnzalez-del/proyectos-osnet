@@ -100,7 +100,7 @@ function Login() {
           </button>
           <button
             type="button"
-            className="btn-osnet btn-secondary-osnet"
+            className="limpiar"
             onClick={() => { setUsername(''); setPassword(''); }}
           >
             Limpiar
