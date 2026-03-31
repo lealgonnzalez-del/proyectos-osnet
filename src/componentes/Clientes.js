@@ -103,7 +103,6 @@ function Clientes() {
     };
   }, [filteredData]);
 
-  // --- CONFIGURACIÓN CORREGIDA ---
   const pieOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -123,7 +122,7 @@ function Clientes() {
         offset: 10,
         color: '#444',
         font: { size: 10, weight: 'bold' },
-        clip: false, // Evita que se corten las etiquetas en los bordes
+        clip: false, 
         formatter: (value, ctx) => {
           const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
           const percentage = ((value * 100) / sum).toFixed(2) + "%";
@@ -134,7 +133,6 @@ function Clientes() {
       tooltip: { enabled: true }
     },
     layout: {
-      // Aumentamos el padding superior para bajar la torta y dejar espacio a los números
       padding: { right: 60, left: 20, top: 40, bottom: 20 }
     }
   };
@@ -159,7 +157,7 @@ function Clientes() {
 
   return (
     <div className="dashboard-container">
-       <button onClick={() => { localStorage.removeItem("token"); navigate("/"); }} className="btn-secondary-osnet" style={{ height: '15px',  marginBottom: '15px' }}>
+       <button onClick={() => { localStorage.removeItem("token"); navigate("/"); }} className="btn-secondary-osnet" style={{ height: '35px',  marginBottom: '15px', padding: '0 15px' }}>
           Cerrar Sesión
         </button>
       <div className="kpi-row">
@@ -171,7 +169,6 @@ function Clientes() {
           <p>PAYMENTS QTY</p>
           <h1>{totalQty}K</h1>
         </div>
-        
       </div>
 
       <div className="filter-row">
@@ -196,7 +193,26 @@ function Clientes() {
       <div className="chart-section full-width">
         <div className="chart-header">$ AMOUNT PER PAYMENT TYPE (MONTHLY TREND)</div>
         <div className="chart-body" style={{ height: '250px' }}>
-          <Bar data={amountPerMonthData} options={{ responsive: true, maintainAspectRatio: false, scales: { y: { ticks: { callback: v => v + 'M' } } } }} />
+          <Bar 
+            data={amountPerMonthData} 
+            options={{ 
+              responsive: true, 
+              maintainAspectRatio: false, 
+              scales: { 
+                y: { ticks: { callback: v => v + 'M' } } 
+              },
+              plugins: {
+                datalabels: {
+                  display: true,
+                  anchor: 'end',
+                  align: 'top',
+                  color: '#444',
+                  font: { weight: 'bold', size: 10 },
+                  formatter: (value) => value > 0 ? value.toFixed(2) + 'M' : ''
+                }
+              }
+            }} 
+          />
         </div>
       </div>
 
