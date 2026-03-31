@@ -13,7 +13,7 @@ function MfaPage() {
   const { userId, qrCodeUrl, tempToken, isFirstTime } = location.state || {};
   
   
-  const [mostrarModal, setMostrarModal] = useState(isFirstTime);
+  const [mostrarModal] = useState(isFirstTime);
 
   useEffect(() => {
     if (!userId) {
@@ -65,7 +65,7 @@ function MfaPage() {
           {isFirstTime 
             ? "Escanea el código QR y luego ingresa el código de tu App." 
             : "Ingresa el código de 6 dígitos de tu aplicación Authenticator."}
-        </p>
+       </p>
         
         <input
           className="input-osnet"
@@ -86,32 +86,22 @@ function MfaPage() {
           {verificando ? 'Verificando...' : 'Confirmar Código'}
         </button>
 
-        <button 
-          className="btn-osnet btn-secondary-osnet" 
-          style={{ marginTop: '10px' }} 
-          onClick={() => navigate("/")}
-        >
-          Volver al inicio
-        </button>
+
+        
       </div>
 
       
       {isFirstTime && qrCodeUrl && mostrarModal && (
         <div className="qr-modal-overlay">
           <div className="qr-modal">
-            <h2 className="qr-title-modal">Configurar Doble Factor</h2>
+            
             <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>
               Abre Google Authenticator o Microsoft Authenticator y escanea:
             </p>
             <div className="qr-image-wrapper">
               <img src={qrCodeUrl} alt="QR Setup" style={{ width: '180px' }} />
             </div>
-            <p style={{ color: '#888', fontSize: '11px', marginTop: '10px' }}>
-              Una vez escaneado, cierra esta ventana e ingresa el código.
-            </p>
-            <button className="btn-qr-close" onClick={() => setMostrarModal(false)}>
-              Ya lo escaneé
-            </button>
+            
           </div>
         </div>
       )}
