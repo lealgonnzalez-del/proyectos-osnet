@@ -156,7 +156,7 @@ function Clientes() {
 
   return (
     <div className="dashboard-container">
-       <button onClick={() => { localStorage.removeItem("token"); navigate("/"); }} className="btn-secondary-osnet" style={{ height: '35px',  marginBottom: '15px', padding: '0 15px' }}>
+       <button onClick={() => { localStorage.removeItem("token"); navigate("/"); }} className="btn-secondary-osnet" style={{ height: '25px',  marginBottom: '15px', padding: '0 15px' }}>
           Cerrar Sesión
         </button>
       <div className="kpi-row">

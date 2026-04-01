@@ -118,6 +118,25 @@ body {
   width: 100px;
   filter: brightness(0) invert(1);
 }
+.btn-secondary-osnet {
+  color: #333;
+  background: transparent; 
+  border: none;
+  cursor: pointer;
+  
+  
+  align-self: flex-start;
+  
+  
+  text-decoration: none;
+  padding: 10px 0; 
+  font-size: 14px;
+}
+
+.btn-secondary-osnet:hover {
+  text-decoration: underline; 
+  color: #000;
+}
 
 
 @media (max-width: 768px) {
