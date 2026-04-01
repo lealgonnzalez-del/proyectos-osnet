@@ -33,7 +33,7 @@ function Clientes() {
   const [loading, setLoading] = useState(true);
   
   const [searchTipo, setSearchTipo] = useState("All");
-  const [searchFecha, setSearchFecha] = useState("All"); // Nuevo estado para YYYY-MM-DD
+  const [searchFecha, setSearchFecha] = useState("All");
 
   const token = localStorage.getItem("token");
 
@@ -65,7 +65,6 @@ function Clientes() {
       const typeLower = String(d.type || "").toLowerCase();
       const matchTipo = searchTipo === "All" || typeLower === searchTipo.toLowerCase();
       
-      // Filtro de Fecha (Year-Month-Day)
       const dateObj = new Date(d.date);
       const formattedDate = dateObj.toISOString().split('T')[0];
       const matchFecha = searchFecha === "All" || formattedDate === searchFecha;
@@ -187,7 +186,6 @@ function Clientes() {
             type="date" 
             value={searchFecha === "All" ? "" : searchFecha} 
             onChange={(e) => setSearchFecha(e.target.value || "All")}
-            className="filter-select" // O usa estilos directos si prefieres
             style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc', outline: 'none' }}
           />
         </div>
@@ -232,9 +230,29 @@ function Clientes() {
             <Bar 
               data={{
                 labels: pieData.labels,
-                datasets: [{ label: 'Qty', data: pieData.labels.map(l => filteredData.filter(d => d.type.toLowerCase() === l.toLowerCase()).length), backgroundColor: '#007bff' }]
+                datasets: [{ 
+                  label: 'Qty', 
+                  data: pieData.labels.map(l => filteredData.filter(d => d.type.toLowerCase() === l.toLowerCase()).length), 
+                  backgroundColor: '#007bff' 
+                }]
               }} 
-              options={{ indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false }, legend: { display: false } } }} 
+              options={{ 
+                indexAxis: 'y', 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                  datalabels: { 
+                    display: true, 
+                    anchor: 'end', 
+                    align: 'right', 
+                    offset: 5,
+                    color: '#444',
+                    font: { weight: 'bold', size: 11 },
+                    formatter: (value) => value // Muestra el número exacto (ej. 32)
+                  }, 
+                  legend: { display: false } 
+                } 
+              }} 
             />
           </div>
         </div>
