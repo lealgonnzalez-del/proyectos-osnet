@@ -1,47 +1,37 @@
 :root {
-  /* Fondo Degradado */
   --bg-gradient: linear-gradient(180deg, #f0f7ff 0%, #d9eeff 100%);
-  
-  /* Colores de Marca */
-  --osnet-blue: #007bff;     /* Azul vibrante KPIs */
-  --header-dark: #343a60;    /* Azul oscuro encabezados */
+  --osnet-blue: #007bff;
+  --header-dark: #343a60;
   --text-white: #ffffff;
   --text-dark: #333333;
   --filter-bg: #e1f2ff;
-
-  
 }
 
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--bg-gradient);
-  min-height: 100vh;
-  color: var(--text-dark);
-  background: linear-gradient(135deg,#04deffe4 0%, #4c46ea 100%);
+  background: linear-gradient(135deg, #04deffe4 0%, #4c46ea 100%);
   background-attachment: fixed;
   min-height: 100vh;
   color: white;
-  
 }
 
 
-/* DASHBOARD LAYOUT */
 .dashboard-container {
   padding: 20px;
-  margin: 0 ;
   background: white;
   min-height: 100vh;
+  color: var(--text-dark);
+  display: flex;
+  flex-direction: column;
 }
 
 .kpi-row, .bottom-charts, .filter-row {
   display: flex;
   gap: 20px;
   margin-bottom: 25px;
-  background: transparent; 
 }
 
-/* KPI CARDS  */
 .kpi-card {
   flex: 1;
   background: var(--osnet-blue);
@@ -51,22 +41,8 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.kpi-card p {
-  color: var(--text-white);
-  font-size: 16px;
-  font-weight: bold;
-  margin: 0 0 5px 0;
-  text-transform: uppercase;
-}
+.kpi-card h1 { font-size: 54px; margin: 0; color: white; }
 
-.kpi-card h1 {
-  font-size: 54px;
-  margin: 0;
-  font-weight: bold;
-  color: var(--text-white);
-}
-
-/* FILTROS  */
 .filter-box {
   flex: 1;
   background: var(--filter-bg);
@@ -78,23 +54,6 @@ body {
   align-items: center;
 }
 
-.filter-box span {
-  color: var(--osnet-blue);
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.filter-box select {
-  width: 90%;
-  background: white;
-  border: 1px solid #ddd;
-  padding: 8px;
-  border-radius: 5px;
-  color: #333;
-}
-
-/* GRÁFICAS */
 .chart-section {
   background: white;
   border-radius: 12px;
@@ -108,175 +67,88 @@ body {
   color: white;
   padding: 12px;
   text-align: center;
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 14px;
-}
-
-.chart-body {
-  padding: 20px;
-  background: white;
 }
 
 .half-width { width: 50%; }
-.full-width { width: 100%; }
 
-/* BOTÓN CERRAR SESIÓN */
-.btn-secondary-osnet {
-  
-  color: black;
-  border: none;
-  cursor: pointer;
-}
-
-
-/*(Login/QR)*/
-
+/* Estilos de Login */
 .container-auth {
-
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-min-height: 100vh;
-position: relative;
-
-}
-
-.auth-title {
-font-size: 28px;
-font-weight: 300;
-margin-bottom: 30px;
-color: var(--text-primary);
-
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 }
 
 .input-osnet {
-width: 250px;
-padding: 10px;
-margin: 10px 0;
-border-radius: 8px;
-border: 1px solid rgba(0,0,0,0.1);
-background: white;
-font-size: 16px;
-box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-
-
+  width: 250px;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
 }
 
-.input-osnet::placeholder {
-color: rgb(163, 161, 161);
-
-}
-
-.password-wrapper {
-position: relative;
-display: flex;
-align-items: center;
-
-}
-
-.eye-icon {
-position: absolute;
-right: 15px;
-cursor: pointer;
-font-size: 20px;
-color: #555;
-
-}
-
-.auth-buttons {
-display: flex;
-gap: 50px;
-margin-top: 25px;
-}
-
-.btn-osnet {
-padding: 10px 20px;
-border: none;
-border-radius: 5px;
-font-size: 12px;
-cursor: pointer;
-transition: background 0.3s;
-color: white;
-
-}
+.password-wrapper { position: relative; display: flex; align-items: center; }
+.eye-icon { position: absolute; right: 10px; cursor: pointer; color: #333; }
 
 .btn-primary-osnet {
-background-color: rgb(31, 31, 40)
-
-
-}
-
-.btn-primary-osnet:hover {
-background-color: #4488ee;
-
-}
-
-
-
-.logo-osnet-bottom {
-position: absolute;
-bottom: 20px;
-right: 20px;
-width: 100px;
-opacity: 0.8;
-filter: brightness(0) invert(1);
-
-}
-
-
-/*QR*/
-
-.qr-modal {
-background: white;
-padding: 10px;
-border-radius: 15px;
-box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-text-align: center;
-width: 300px;
-
-}
-
-.qr-title-modal {
-
-color: #333;
-font-size: 18px;
-font-weight: bold;
-margin-bottom: 20px;
-
-}
-
-.qr-image-wrapper {
-
-padding: 15px;
-background: #f9f9f9;
-display: inline-block;
-border-radius: 10px;
-margin-bottom: 20px;
-
-}
-.btn-qr-close {
-
-background-color: var(--btn-qr);
-color: white;
-padding: 10px 25px;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-font-size: 14px;
-
-}
-.limpiar {
-  
+  background-color: rgb(31, 31, 40);
   color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
-  padding: 10px 20px;
-  background-color: rgb(31, 31, 40)
-  
 }
-.limpiar:hover{
-  background-color: #4488ee;
+
+.btn-primary-osnet:hover { background-color: #4488ee; }
+
+.limpiar {
+  background-color: white;
+  color: #333;
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logo-osnet-bottom {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 100px;
+  filter: brightness(0) invert(1);
+}
+
+
+@media (max-width: 768px) {
+  .kpi-row, .bottom-charts, .filter-row, .auth-buttons {
+    flex-direction: column; 
+    gap: 15px;
+  }
+
+  .half-width {
+    width: 100% !important; 
+  }
+
+  .dashboard-container {
+    padding: 10px;
+  }
+
+  
+  .input-osnet, .btn-primary-osnet, .limpiar {
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .kpi-card h1 {
+    font-size: 38px; 
+  }
+
+  
+  .logo-osnet-bottom {
+    position: relative;
+    bottom: 0;
+    right: 0;
+    margin-top: 20px;
+  }
 }
