@@ -35,6 +35,11 @@ function Clientes() {
   const [searchTipo, setSearchTipo] = useState("All");
   const [searchFecha, setSearchFecha] = useState("All");
 
+  // Estados para controlar la visibilidad de los valores en las gráficas
+  const [showLabelsTrend, setShowLabelsTrend] = useState(true);
+  const [showLabelsPie, setShowLabelsPie] = useState(true);
+  const [showLabelsQty, setShowLabelsQty] = useState(true);
+
   const token = localStorage.getItem("token");
 
   const paymentTypes = [
@@ -116,6 +121,7 @@ function Clientes() {
         }
       },
       datalabels: {
+        display: showLabelsPie, // Control dinámico
         anchor: 'end',
         align: 'end',
         offset: 10,
@@ -152,6 +158,19 @@ function Clientes() {
     };
   }, [filteredData]);
 
+  // Estilo pequeño para los botones de las gráficas
+  const btnToggleStyle = {
+    fontSize: '10px',
+    padding: '2px 8px',
+    cursor: 'pointer',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    background: '#fff',
+    color: '#555',
+    marginLeft: '10px',
+    transition: 'all 0.2s'
+  };
+
   if (loading) return <div className="loading">Actualizando métricas...</div>;
 
   return (
@@ -159,6 +178,7 @@ function Clientes() {
        <button onClick={() => { localStorage.removeItem("token"); navigate("/"); }} className="btn-secondary-osnet" style={{ height: '25px',  marginBottom: '15px', padding: '0 15px' }}>
           Cerrar Sesión
         </button>
+      
       <div className="kpi-row">
         <div className="kpi-card">
           <p>TOTAL $ AMOUNT</p>
@@ -192,7 +212,12 @@ function Clientes() {
       </div>
 
       <div className="chart-section full-width">
-        <div className="chart-header">$ AMOUNT PER PAYMENT TYPE (MONTHLY TREND)</div>
+        <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>$ AMOUNT PER PAYMENT TYPE (MONTHLY TREND)</span>
+          <button onClick={() => setShowLabelsTrend(!showLabelsTrend)} style={btnToggleStyle}>
+            {showLabelsTrend ? "Ocultar Valores" : "Mostrar Valores"}
+          </button>
+        </div>
         <div className="chart-body" style={{ height: '250px' }}>
           <Bar 
             data={amountPerMonthData} 
@@ -204,7 +229,7 @@ function Clientes() {
               },
               plugins: {
                 datalabels: {
-                  display: true,
+                  display: showLabelsTrend, // Control dinámico
                   anchor: 'end',
                   align: 'top',
                   color: '#444',
@@ -219,13 +244,24 @@ function Clientes() {
 
       <div className="bottom-charts">
         <div className="chart-section half-width">
-          <div className="chart-header">$ AMOUNT PER PAYMENT TYPE</div>
+          <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>$ AMOUNT PER PAYMENT TYPE</span>
+            <button onClick={() => setShowLabelsPie(!showLabelsPie)} style={btnToggleStyle}>
+              {showLabelsPie ? "Ocultar" : "Mostrar"}
+            </button>
+          </div>
           <div className="chart-body" style={{ height: '300px' }}>
             <Pie data={pieData} options={pieOptions} />
           </div>
         </div>
+
         <div className="chart-section half-width">
-          <div className="chart-header">PAYMENT QTY PER PAYMENT TYPE</div>
+          <div className="chart-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>PAYMENT QTY PER PAYMENT TYPE</span>
+            <button onClick={() => setShowLabelsQty(!showLabelsQty)} style={btnToggleStyle}>
+              {showLabelsQty ? "Ocultar" : "Mostrar"}
+            </button>
+          </div>
           <div className="chart-body" style={{ height: '320px' }}>
             <Bar 
               data={{
@@ -242,13 +278,13 @@ function Clientes() {
                 maintainAspectRatio: false, 
                 plugins: { 
                   datalabels: { 
-                    display: true, 
+                    display: showLabelsQty, // Control dinámico
                     anchor: 'end', 
                     align: 'right', 
                     offset: 5,
                     color: '#444',
                     font: { weight: 'bold', size: 11 },
-                    formatter: (value) => value // Muestra el número exacto (ej. 32)
+                    formatter: (value) => value 
                   }, 
                   legend: { display: false } 
                 } 

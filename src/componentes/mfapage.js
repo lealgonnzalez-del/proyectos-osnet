@@ -9,11 +9,10 @@ function MfaPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  
   const { userId, qrCodeUrl, tempToken, isFirstTime } = location.state || {};
   
   
-  const [mostrarModal] = useState(isFirstTime);
+  const [mostrarQR] = useState(isFirstTime);
 
   useEffect(() => {
     if (!userId) {
@@ -33,12 +32,10 @@ function MfaPage() {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          
           'Authorization': `Bearer ${tempToken}` 
         },
         body: JSON.stringify({ 
           userId: userId, 
-          
           mfaCode: codigo 
         }),
       });
@@ -60,12 +57,13 @@ function MfaPage() {
 
   return (
     <div className="container-auth">
-      <div className="form-auth">
+      <div className="form-auth" style={{ width: '100%', maxWidth: '320px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        
         <p style={{ color: '#fff', fontSize: '14px', marginBottom: '20px', textAlign: 'center' }}>
           {isFirstTime 
             ? "Escanea el código QR y luego ingresa el código de tu App." 
             : "Ingresa el código de 6 dígitos de tu aplicación Authenticator."}
-       </p>
+        </p>
         
         <input
           className="input-osnet"
@@ -74,39 +72,74 @@ function MfaPage() {
           value={codigo}
           maxLength={6}
           onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
-          style={{ textAlign: 'center', fontSize: '20px', letterSpacing: '8px' }}
+          style={{ 
+            textAlign: 'center', 
+            fontSize: '20px', 
+            letterSpacing: '8px',
+            width: '100%',
+            boxSizing: 'border-box',
+            display: 'block',
+            marginBottom: '0' 
+          }}
         />
         
         <button 
           className="btn-osnet btn-primary-osnet" 
           onClick={verificarCodigo}
           disabled={verificando}
-          style={{ marginTop: '20px', marginLeft: '10px' }}
+          style={{ 
+            marginTop: '20px', 
+            width: '100%',
+            boxSizing: 'border-box',
+            marginLeft: '0'
+          }}
         >
           {verificando ? 'Verificando...' : 'Confirmar Código'}
         </button>
 
-
         
-      </div>
-
-      
-      {isFirstTime && qrCodeUrl && mostrarModal && (
-        <div className="qr-modal-overlay">
-          <div className="qr-modal">
-            
-            <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>
+        {isFirstTime && qrCodeUrl && mostrarQR && (
+          
+          <div style={{ 
+            marginTop: '30px',      
+            marginBottom: '30px',   
+            width: '100%',          
+            display: 'flex',        
+            flexDirection: 'column',
+            alignItems: 'center',    
+            justifyContent: 'center',
+            textAlign: 'center'
+          }}>
+            <p style={{ 
+              color: '#333',         
+              fontSize: '13px', 
+              marginBottom: '15px', 
+              width: '90%',          
+              lineHeight: '1.4'      
+            }}>
               Abre Google Authenticator o Microsoft Authenticator y escanea:
             </p>
-            <div className="qr-image-wrapper">
-              <img src={qrCodeUrl} alt="QR Setup" style={{ width: '180px' }} />
-            </div>
             
+            
+            <div style={{ 
+              backgroundColor: '#fff', 
+              padding: '10px',        
+              borderRadius: '8px',    
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)' 
+            }}>
+              <img src={qrCodeUrl} alt="QR Setup" style={{ 
+                width: '180px', 
+                height: '180px',      
+                display: 'block'      
+              }} />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+        
 
-      <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" />
+      </div>
+
+      <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" style={{ display: 'block', margin: '10px auto 30px', width: '120px' }} />
     </div>
   );
 }
