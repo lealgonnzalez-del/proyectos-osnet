@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Pie, Bar, Chart } from "react-chartjs-2";
+import { Pie, Bar } from "react-chartjs-2";
 import { 
   Chart as ChartJS, 
   CategoryScale, 
@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import "../App.css";
+
 
 const CHART_COLORS = ["#6f42c1", "#007bff", "#5a2d81", "#e83e8c", "#20c997", "#fd7e14", "#ffc107", "#28a745"];
 
@@ -149,7 +150,17 @@ function Clientes() {
           return `${formattedValue}\n(${percentage})`;
         }
       },
-      tooltip: { enabled: true }
+      tooltip: { enabled: true,
+        callbacks: {
+          label: (context) => {
+            const value = context.raw;
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = ((value * 100) / total).toFixed(2) + "%";
+            const formattedValue = (value / 1000).toFixed(2) + "K";
+            return `${context.label}: ${formattedValue} (${percentage})`;
+          }
+        }
+      }
     },
     layout: {
       padding: { right: 60, left: 20, top: 40, bottom: 20 }
