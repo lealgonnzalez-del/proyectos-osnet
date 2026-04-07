@@ -35,7 +35,6 @@ function Clientes() {
   const [searchTipo, setSearchTipo] = useState("All");
   const [searchFecha, setSearchFecha] = useState("All");
 
-  // Estados para controlar la visibilidad de los valores en las gráficas
   const [showLabelsTrend, setShowLabelsTrend] = useState(true);
   const [showLabelsPie, setShowLabelsPie] = useState(true);
   const [showLabelsQty, setShowLabelsQty] = useState(true);
@@ -121,7 +120,7 @@ function Clientes() {
         }
       },
       datalabels: {
-        display: showLabelsPie, // Control dinámico
+        display: showLabelsPie,
         anchor: 'end',
         align: 'end',
         offset: 10,
@@ -158,7 +157,6 @@ function Clientes() {
     };
   }, [filteredData]);
 
-  // Estilo pequeño para los botones de las gráficas
   const btnToggleStyle = {
     fontSize: '10px',
     padding: '2px 8px',
@@ -224,17 +222,31 @@ function Clientes() {
             options={{ 
               responsive: true, 
               maintainAspectRatio: false, 
+              layout: {
+                padding: { top: 35 } // Espacio para que las etiquetas rotadas no se corten
+              },
               scales: { 
+                x: {
+                  categoryPercentage: 0.8, // Espacio entre grupos de meses
+                  barPercentage: 0.9,      // Espacio entre barras individuales
+                  grid: { display: false }
+                },
                 y: { ticks: { callback: v => v + 'M' } } 
               },
               plugins: {
+                legend: {
+                  labels: { boxWidth: 12, font: { size: 10 } }
+                },
                 datalabels: {
-                  display: showLabelsTrend, // Control dinámico
+                  display: showLabelsTrend,
                   anchor: 'end',
                   align: 'top',
+                  rotation: -90, // Rota etiquetas para evitar el amontonamiento
+                  offset: 8,
                   color: '#444',
-                  font: { weight: 'bold', size: 10 },
-                  formatter: (value) => value > 0 ? value.toFixed(2) + 'M' : ''
+                  font: { weight: 'bold', size: 9 },
+                  formatter: (value) => value > 0 ? value.toFixed(2) + 'M' : '',
+                  clip: false
                 }
               }
             }} 
@@ -278,7 +290,7 @@ function Clientes() {
                 maintainAspectRatio: false, 
                 plugins: { 
                   datalabels: { 
-                    display: showLabelsQty, // Control dinámico
+                    display: showLabelsQty,
                     anchor: 'end', 
                     align: 'right', 
                     offset: 5,
