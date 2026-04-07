@@ -10,7 +10,7 @@ function QRUsuario({ usuario }) {
 
         <div className="qr-box">
 
-          {/* 🔥 QR GENERADO */}
+          {/*  QR GENERADO */}
           <div className="qr-wrapper">
             <QRCodeCanvas
               value={usuario}
@@ -20,7 +20,7 @@ function QRUsuario({ usuario }) {
             />
           </div>
 
-          {/* 🔥 CAPA SOBREPUESTA */}
+          {/*  CAPA SOBREPUESTA */}
           <div className="qr-overlay"></div>
 
         </div>
