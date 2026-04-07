@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import logo from '../imagenes/osnet.png';
+//import { BACKEND_URL } from '../config';//
+
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -15,7 +17,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3002/auth/login', {
+      const res = await fetch(`http://localhost:3002/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

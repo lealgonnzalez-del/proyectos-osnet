@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Pie, Bar } from "react-chartjs-2";
+import { Pie, Bar, Chart } from "react-chartjs-2";
 import { 
   Chart as ChartJS, 
   CategoryScale, 
@@ -64,6 +64,21 @@ function Clientes() {
     obtenerDatos();
   }, [token, navigate]);
 
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: 520px)`);
+
+    mql.addEventListener("change", () => {
+      setShowLabelsPie(window.innerWidth > 520);
+    });
+
+
+    return () => {
+      mql.removeEventListener("change", () => {
+      setShowLabelsPie(window.innerWidth > 520);
+    });
+    };
+  }, []);
+
   const filteredData = useMemo(() => {
     return data.filter(d => {
       const typeLower = String(d.type || "").toLowerCase();
@@ -114,9 +129,9 @@ function Clientes() {
         position: 'right',
         labels: {
           usePointStyle: true,
-          padding: 15,
+          padding: 13,
           color: '#333',
-          font: { size: 11, weight: '500' }
+          font: { size: 10, weight: '500' }
         }
       },
       datalabels: {

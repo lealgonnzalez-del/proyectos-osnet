@@ -110,6 +110,7 @@ body {
   border: 1px solid #ddd;
   border-radius: 5px;
   cursor: pointer;
+  
 }
 
 .logo-osnet-bottom {
@@ -137,6 +138,10 @@ body {
 .btn-secondary-osnet:hover {
   text-decoration: underline; 
   color: #000;
+}
+.auth-buttons{
+  display: flex;
+  gap: 15px;
 }
 
 
