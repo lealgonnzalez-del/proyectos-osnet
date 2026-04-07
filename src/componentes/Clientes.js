@@ -123,7 +123,7 @@ function Clientes() {
         display: showLabelsPie,
         anchor: 'end',
         align: 'end',
-        offset: 10,
+        offset: 0,
         color: '#444',
         font: { size: 10, weight: 'bold' },
         clip: false, 
@@ -223,7 +223,7 @@ function Clientes() {
               responsive: true, 
               maintainAspectRatio: false, 
               layout: {
-                padding: { top: 35 } // Espacio para que las etiquetas rotadas no se corten
+                padding: { top: 35 } 
               },
               scales: { 
                 x: {
@@ -241,7 +241,7 @@ function Clientes() {
                   display: showLabelsTrend,
                   anchor: 'end',
                   align: 'top',
-                  rotation: -90, // Rota etiquetas para evitar el amontonamiento
+                  rotation: -90, 
                   offset: 8,
                   color: '#444',
                   font: { weight: 'bold', size: 9 },
