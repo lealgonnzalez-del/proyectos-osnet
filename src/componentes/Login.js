@@ -70,47 +70,53 @@ function Login() {
   };
 
   return (
+    
     <div className="container-auth">
-      <h2 className="auth-title">Inicio de Sesión</h2>
-      
-      <form onSubmit={handleLogin} className="form-auth">
-        <input
-          className="input-osnet"
-          placeholder="Usuario"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        
-        <div className="password-wrapper">
-          <input
-            className="input-osnet input-password-osnet"
-            type={mostrarPassword ? 'text' : 'password'}
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <span className="eye-icon" onClick={() => setMostrarPassword(!mostrarPassword)}>
-            {mostrarPassword ? '👁️' : '👁️‍🗨️'}
-          </span>
-        </div>
+      <div className="login-card"> 
 
-        <div className="auth-buttons">
-          <button type="submit" className="btn-osnet btn-primary-osnet" disabled={loading}>
-            {loading ? 'Cargando...' : 'Iniciar Sesión'}
-          </button>
-          <button
-            type="button"
-            className="limpiar"
-            onClick={() => { setUsername(''); setPassword(''); }}
-          >
-            Limpiar
-          </button>
-        </div>
-      </form>
-      
-      <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" />
+        <h2 className="auth-title">Inicio de Sesión</h2>
+        
+        <form onSubmit={handleLogin} className="form-auth">
+          <div className="input-container">
+            <input
+              className="input-osnet"
+              placeholder="Usuario"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          
+          <div className="password-wrapper">
+            <input
+              className="input-osnet input-password-osnet"
+              type={mostrarPassword ? 'text' : 'password'}
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <span className="eye-icon" onClick={() => setMostrarPassword(!mostrarPassword)}>
+              {mostrarPassword ? '👁️' : '👁️‍🗨️'}
+            </span>
+          </div>
+
+          <div className="auth-buttons">
+            <button type="submit" className="btn-osnet btn-primary-osnet" disabled={loading}>
+              {loading ? 'Cargando...' : 'Iniciar Sesión'}
+            </button>
+            <button
+              type="button"
+              className="limpiar"
+              onClick={() => { setUsername(''); setPassword(''); }}
+            >
+              Limpiar
+            </button>
+          </div>
+        </form>
+        
+        <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" />
+      </div>
     </div>
   );
 }

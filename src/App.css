@@ -80,17 +80,67 @@ body {
   justify-content: center;
   min-height: 100vh;
 }
+.login-card {
+  background: white;
+  padding:  1rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
-.input-osnet {
-  width: 250px;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid rgba(0,0,0,0.1);
+}
+.auth-title {
+  
+  color: var(--header-dark);
+  text-align: center;
 }
 
-.password-wrapper { position: relative; display: flex; align-items: center; }
-.eye-icon { position: absolute; right: 10px; cursor: pointer; color: #333; }
+.input-osnet {
+  width: 100% !important;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  
+}
+.input-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0px auto;
+}
+.input-password-osnet {
+  width: 100% !important;
+  margin: 0 !important;
+  padding-right: 40px;
+  box-sizing: border-box;
+
+}
+.password-wrapper { 
+  position: relative; 
+  display: flex; 
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  margin: 10px auto;
+}
+.eye-icon { 
+  position: absolute; 
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%); 
+  cursor: pointer;
+  display: flex;
+  align-items: center; 
+  color: #333; 
+  z-index: 10;
+}
 
 .btn-primary-osnet {
   background-color: rgb(31, 31, 40);
@@ -101,7 +151,7 @@ body {
   cursor: pointer;
 }
 
-.btn-primary-osnet:hover { background-color: #4488ee; }
+.btn-primary-osnet:hover { background-color: #209866; }
 
 .limpiar {
   background-color: white;
@@ -141,9 +191,17 @@ body {
 }
 .auth-buttons{
   display: flex;
+  flex-direction: column;
   gap: 15px;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
 }
-
+.container-auth .btn-primary-osnet, .container-auth .limpiar {
+  width: 100%;
+  max-width: 300px;
+  
+}
 
 @media (max-width: 768px) {
   .kpi-row, .bottom-charts, .filter-row, .auth-buttons {
