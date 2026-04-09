@@ -67,17 +67,9 @@ function Clientes() {
 
   useEffect(() => {
     const mql = window.matchMedia(`(max-width: 520px)`);
-
-    mql.addEventListener("change", () => {
-      setShowLabelsPie(window.innerWidth > 520);
-    });
-
-
-    return () => {
-      mql.removeEventListener("change", () => {
-      setShowLabelsPie(window.innerWidth > 520);
-    });
-    };
+    const handleResize = () => setShowLabelsPie(window.innerWidth > 520);
+    mql.addEventListener("change", handleResize);
+    return () => mql.removeEventListener("change", handleResize);
   }, []);
 
   const filteredData = useMemo(() => {
@@ -106,6 +98,7 @@ function Clientes() {
       const total = filteredData
         .filter(d => d.type === t)
         .reduce((sum, d) => sum + Number(d.amount), 0);
+        
       return { label: t, value: total };
     });
 
@@ -127,10 +120,12 @@ function Clientes() {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'right',
+        // Corrección: 'top' para Android/móvil, 'right' para PC
+        position: window.innerWidth < 768 ? 'top' : 'right',
+        align: 'center',
         labels: {
           usePointStyle: true,
-          padding: 13,
+          padding: 15,
           color: '#333',
           font: { size: 10, weight: '500' }
         }
@@ -139,7 +134,7 @@ function Clientes() {
         display: showLabelsPie,
         anchor: 'end',
         align: 'end',
-        offset: 0,
+        offset: 10,
         color: '#444',
         font: { size: 10, weight: 'bold' },
         clip: false, 
@@ -150,7 +145,8 @@ function Clientes() {
           return `${formattedValue}\n(${percentage})`;
         }
       },
-      tooltip: { enabled: true,
+      tooltip: { 
+        enabled: true,
         callbacks: {
           label: (context) => {
             const value = context.raw;
@@ -163,7 +159,10 @@ function Clientes() {
       }
     },
     layout: {
-      padding: { right: 60, left: 20, top: 40, bottom: 20 }
+      // Ajuste de padding responsivo para centrado
+      padding: window.innerWidth < 768 
+        ? { right: 30, left: 30, top: 10, bottom: 30 }
+        : { right: 80, left: 20, top: 40, bottom: 40 }
     }
   };
 
@@ -242,7 +241,7 @@ function Clientes() {
             {showLabelsTrend ? "Ocultar Valores" : "Mostrar Valores"}
           </button>
         </div>
-        <div className="chart-body" style={{ height: '250px' }}>
+        <div className="chart-body" style={{ height: '400px' }}>
           <Bar 
             data={amountPerMonthData} 
             options={{ 
@@ -253,8 +252,8 @@ function Clientes() {
               },
               scales: { 
                 x: {
-                  categoryPercentage: 0.8, // Espacio entre grupos de meses
-                  barPercentage: 0.9,      // Espacio entre barras individuales
+                  categoryPercentage: 0.8, 
+                  barPercentage: 0.9,      
                   grid: { display: false }
                 },
                 y: { ticks: { callback: v => v + 'M' } } 
@@ -288,7 +287,7 @@ function Clientes() {
               {showLabelsPie ? "Ocultar" : "Mostrar"}
             </button>
           </div>
-          <div className="chart-body" style={{ height: '300px' }}>
+          <div className="chart-body" style={{ height: '450px' }}>
             <Pie data={pieData} options={pieOptions} />
           </div>
         </div>
@@ -300,14 +299,15 @@ function Clientes() {
               {showLabelsQty ? "Ocultar" : "Mostrar"}
             </button>
           </div>
-          <div className="chart-body" style={{ height: '320px' }}>
+          <div className="chart-body" style={{ height: '450px' }}>
             <Bar 
               data={{
                 labels: pieData.labels,
                 datasets: [{ 
                   label: 'Qty', 
                   data: pieData.labels.map(l => filteredData.filter(d => d.type.toLowerCase() === l.toLowerCase()).length), 
-                  backgroundColor: '#007bff' 
+                  backgroundColor: '#007bff',
+                  barPercentage: 0.7,
                 }]
               }} 
               options={{ 
@@ -319,13 +319,16 @@ function Clientes() {
                     display: showLabelsQty,
                     anchor: 'end', 
                     align: 'right', 
-                    offset: 5,
+                    offset: 10,
                     color: '#444',
                     font: { weight: 'bold', size: 11 },
                     formatter: (value) => value 
                   }, 
                   legend: { display: false } 
-                } 
+                },
+                scales: {
+                  x: { beginAtZero: true }
+                }
               }} 
             />
           </div>
