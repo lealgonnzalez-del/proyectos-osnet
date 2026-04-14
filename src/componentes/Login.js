@@ -25,19 +25,25 @@ function Login() {
 
       const data = await res.json();
 
-      // CASO 1: Primera vez (Generar QR)
+      
       if (data.access_token) {
-        const qrRes = await fetch('http://localhost:3002/auth/mfa/generate', {
-          headers: { Authorization: `Bearer ${data.access_token}` }
+
+        const mfaRes = await fetch('http://localhost:3002/auth/mfa/generate', {
+          method: 'GET',
+          headers: { 
+            Authorization: `Bearer ${data.access_token}` 
+          }
         });
-        const qrData = await qrRes.json();
+
+        
+        if (!mfaRes.ok ) 
+
+        alert("se envio un codigo a tu correo ")
 
         navigate('/mfa', { 
           state: { 
             userId: data.user.id, 
-            qrCodeUrl: qrData.qrCodeUrl, 
-            isFirstTime: true,
-            
+            tempToken: data.access_token, 
           } 
         });
         return;

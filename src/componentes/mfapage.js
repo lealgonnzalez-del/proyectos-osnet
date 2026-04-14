@@ -60,9 +60,7 @@ function MfaPage() {
       <div className="form-auth" style={{ width: '100%', maxWidth: '320px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         
         <p style={{ color: '#fff', fontSize: '14px', marginBottom: '20px', textAlign: 'center' }}>
-          {isFirstTime 
-            ? "Escanea el código QR y luego ingresa el código de tu App." 
-            : "Ingresa el código de 6 dígitos de tu aplicación Authenticator."}
+          Ingresa el codigo enviado a tu correo electronico
         </p>
         
         <input
