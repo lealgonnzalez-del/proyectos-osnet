@@ -9,10 +9,7 @@ function MfaPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { userId, qrCodeUrl, tempToken, isFirstTime } = location.state || {};
-  
-  
-  const [mostrarQR] = useState(isFirstTime);
+  const { userId, tempToken } = location.state || {};
 
   useEffect(() => {
     if (!userId) {
@@ -57,7 +54,17 @@ function MfaPage() {
 
   return (
     <div className="container-auth">
-      <div className="form-auth" style={{ width: '100%', maxWidth: '320px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div 
+        className="form-auth" 
+        style={{ 
+          width: '100%', 
+          maxWidth: '320px', 
+          margin: '0 auto', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center' 
+        }}
+      >
         
         <p style={{ color: '#fff', fontSize: '14px', marginBottom: '20px', textAlign: 'center' }}>
           Ingresa el codigo enviado a tu correo electronico
@@ -95,49 +102,14 @@ function MfaPage() {
           {verificando ? 'Verificando...' : 'Confirmar Código'}
         </button>
 
-        
-        {isFirstTime && qrCodeUrl && mostrarQR && (
-          
-          <div style={{ 
-            marginTop: '30px',      
-            marginBottom: '30px',   
-            width: '100%',          
-            display: 'flex',        
-            flexDirection: 'column',
-            alignItems: 'center',    
-            justifyContent: 'center',
-            textAlign: 'center'
-          }}>
-            <p style={{ 
-              color: '#333',         
-              fontSize: '13px', 
-              marginBottom: '15px', 
-              width: '90%',          
-              lineHeight: '1.4'      
-            }}>
-              Abre Google Authenticator o Microsoft Authenticator y escanea:
-            </p>
-            
-            
-            <div style={{ 
-              backgroundColor: '#fff', 
-              padding: '10px',        
-              borderRadius: '8px',    
-              boxShadow: '0 2px 10px rgba(0,0,0,0.1)' 
-            }}>
-              <img src={qrCodeUrl} alt="QR Setup" style={{ 
-                width: '180px', 
-                height: '180px',      
-                display: 'block'      
-              }} />
-            </div>
-          </div>
-        )}
-        
-
       </div>
 
-      <img src={logo} alt="Logo OSNET" className="logo-osnet-bottom" style={{ display: 'block', margin: '10px auto 30px', width: '120px' }} />
+      <img 
+        src={logo} 
+        alt="Logo OSNET" 
+        className="logo-osnet-bottom" 
+        style={{ display: 'block', margin: '10px auto 30px', width: '120px' }} 
+      />
     </div>
   );
 }
