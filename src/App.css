@@ -31,7 +31,12 @@ body {
   gap: 20px;
   margin-bottom: 25px;
 }
-
+.kpi-card p {
+  
+  color: #343a60;
+  font-size: 16px;
+  font-weight: bold;
+}
 .kpi-card {
   flex: 1;
   background: var(--osnet-blue);
@@ -41,7 +46,10 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.kpi-card h1 { font-size: 54px; margin: 0; color: white; }
+.kpi-card h1 { font-size: 54px; 
+  margin: 0; 
+  color: white; 
+}
 
 .filter-box {
   flex: 1;
